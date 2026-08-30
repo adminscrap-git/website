@@ -18,8 +18,32 @@ export const site = {
   email: process.env.NEXT_PUBLIC_EMAIL ?? "hello@mint.example",
   city: process.env.NEXT_PUBLIC_CITY ?? "Hyderabad",
 
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  url: resolveSiteUrl(),
 } as const;
+
+/**
+ * The site's own address, which is load-bearing: it builds the track/cancel
+ * link that goes into every WhatsApp confirmation. Get it wrong in production
+ * and customers receive a link to localhost.
+ *
+ * Order matters. NEXT_PUBLIC_SITE_URL wins so a custom domain always overrides.
+ * Failing that, Vercel's own production URL — always set, at build and runtime,
+ * and stable across deployments (unlike VERCEL_URL, which changes every push).
+ * That means the very first deploy is correct without anyone setting anything.
+ */
+function resolveSiteUrl(): string {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (explicit) return explicit.replace(/\/$/, "");
+
+  // The NEXT_PUBLIC_ variant is what survives into a client bundle; the bare
+  // one is what server code sees. Check both rather than guess which we're in.
+  const vercel =
+    process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL ??
+    process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  if (vercel) return `https://${vercel}`;
+
+  return "http://localhost:3000";
+}
 
 export const telHref = `tel:${site.phone.replace(/[^\d+]/g, "")}`;
 

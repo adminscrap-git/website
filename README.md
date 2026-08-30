@@ -211,12 +211,70 @@ dates that shift a day on a non-IST server, estimate arithmetic, phone
 normalisation, and the rule that decides whether a customer may still cancel.
 No database needed. Run it after touching anything in `lib/`.
 
-## Deploying
+## Deploying to Vercel
 
-Vercel. Add the four environment variables from `.env.local`, set
-`NEXT_PUBLIC_SITE_URL` to the real domain, and add that domain to Supabase under
-**Authentication → URL Configuration**.
+### 1. Import the repo
 
-Every page that reads the database is `force-dynamic`, so the build never needs a
-reachable database. If traffic makes that cost real, swap the affected pages to
-`export const revalidate = 300` — the queries are already shaped for it.
+vercel.com → **Add New → Project** → import `adminscrap-git/website`.
+
+If Vercel doesn't list it, your Vercel account is connected to a different
+GitHub account. Vercel → Settings → Git → add the `adminscrap-git` connection,
+or grant its GitHub App access to that repo.
+
+Framework preset is detected automatically. Don't override the build command.
+
+### 2. Environment variables
+
+Only three are required:
+
+| Variable | Value |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Project Settings → API |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | same page, anon / publishable key |
+| `SUPABASE_SERVICE_ROLE_KEY` | same page, service_role / secret key |
+
+`NEXT_PUBLIC_SITE_URL` is **not** needed for the first deploy — `lib/site.ts`
+falls back to Vercel's own `VERCEL_PROJECT_PRODUCTION_URL`, so booking links are
+correct out of the box. Set it later, when you point a custom domain at the
+project, and it takes over.
+
+The `NEXT_PUBLIC_PHONE` / `WHATSAPP` / `EMAIL` / `CITY` variables are only
+build-time fallbacks. The live values come from **Admin → Settings**, so skip
+them here.
+
+### 3. Region — do not skip this
+
+`vercel.json` pins functions to `bom1` (Mumbai). Vercel's default is `iad1`
+(Washington DC), and **every page on this site queries Supabase on every
+request**, so functions in Virginia talking to a database in Mumbai would add a
+few hundred milliseconds of round trip to every page load.
+
+Set your Supabase project to the same region — check it under Supabase →
+Project Settings → General. If yours is not in Mumbai, change `regions` in
+`vercel.json` to match, then redeploy. Changing the region only takes effect on
+a fresh deployment.
+
+Hobby plans can pick one region; that is all this needs.
+
+### 4. After the first deploy
+
+- Open `/admin`, sign in, and set the real business phone and WhatsApp number
+  under **Settings**. Until you do, every confirmation message points at the
+  `919999999999` placeholder.
+- Add your remaining pincodes under **Service area**.
+- Walk the loop once on the live URL: `/pick` → book → cancel from the booking
+  link.
+
+### Notes
+
+Nothing here needs Supabase's **Authentication → URL Configuration**. Admin
+sign-in is email + password with a cookie session — there are no magic links or
+OAuth redirects to allow-list.
+
+On Supabase's free tier a project pauses after a week with no requests, which
+takes the site down until you resume it from the dashboard. If this is going in
+front of real customers, that alone is the reason to be on a paid plan.
+
+Every page that reads the database is `force-dynamic`, so the build never needs
+a reachable database. If traffic makes that cost real, swap the affected pages
+to `export const revalidate = 300` — the queries are already shaped for it.
