@@ -1,0 +1,154 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────
+   MINT — design tokens
+   Palette: "Cobalt Heat". Cream ground, cobalt structure,
+   coral action, sun for energy. No green, anywhere, ever.
+   ───────────────────────────────────────────────────────────── */
+@theme {
+  /* ground */
+  --color-paper: #f7f3ec;
+  --color-paper-2: #efe8dc;
+  --color-paper-3: #e2d9c8;
+
+  /* ink */
+  --color-ink: #0b0b0b;
+  --color-ink-2: #57534a;
+  --color-ink-3: #8b857a;
+
+  /* structure */
+  --color-cobalt: #1b3bff;
+  --color-cobalt-deep: #0f23a8;
+  --color-cobalt-soft: #dfe3ff;
+
+  /* action */
+  --color-coral: #ff5c39;
+  --color-coral-deep: #d93d1c;
+  --color-coral-soft: #ffe2da;
+
+  /* energy */
+  --color-sun: #ffc53d;
+  --color-sun-soft: #fff0cc;
+
+  --font-display: var(--font-gabarito), ui-rounded, "Segoe UI", system-ui, sans-serif;
+  --font-mono: var(--font-martian), ui-monospace, "Cascadia Mono", monospace;
+
+  --radius-toy: 28px;
+  --radius-sm: 14px;
+
+  /* springy, with real overshoot — the Kinetic Toy signature */
+  --ease-toy: linear(
+    0, 0.2178 2.1%, 0.7285 6.7%, 0.8935 9.2%, 1.0114 11.9%, 1.0523 13.2%,
+    1.0782 14.6%, 1.0844 16.1%, 1.0699 18.2%, 1.0244 21.4%, 0.9905 24.1%,
+    0.9862 25.5%, 0.9931 28.4%, 1.0033 33.1%, 1.0009 41.3%, 1
+  );
+  --ease-out-toy: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Sticky offsets key off this. Defined once so the mobile sheet and the
+   /pick jump-nav can never drift out of alignment with the real header. */
+:root {
+  --header-h: 72px;
+}
+@media (min-width: 640px) {
+  :root {
+    --header-h: 76px;
+  }
+}
+
+/* ── base ───────────────────────────────────────────────────── */
+html {
+  background: var(--color-paper);
+  scroll-behavior: smooth;
+  /* stop iOS from inflating our carefully-set type */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
+
+::selection {
+  background: var(--color-cobalt);
+  color: var(--color-paper);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-cobalt);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* the whole build is light-only by design; don't let the OS invert it */
+:root {
+  color-scheme: light;
+}
+
+/* ── utilities ──────────────────────────────────────────────── */
+
+/* Paper grain. One inline SVG, no image request, ~0 cost.
+   Gives the cream ground a printed feel instead of a flat fill. */
+@utility grain {
+  position: relative;
+  isolation: isolate;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.32'/%3E%3C/svg%3E");
+  }
+}
+
+/* Numbers that should read like a scale readout. */
+@utility readout {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  letter-spacing: -0.03em;
+}
+
+/* Display type: tight, heavy, and never orphaned mid-phrase. */
+@utility display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 0.88;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+@utility hairline {
+  border-color: var(--color-paper-3);
+}
+
+/* ── motion ─────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
