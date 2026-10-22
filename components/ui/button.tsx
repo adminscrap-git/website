@@ -11,12 +11,12 @@ type Variant = "primary" | "cobalt" | "outline" | "ghost";
 type Size = "sm" | "md" | "lg";
 
 const VARIANT: Record<Variant, string> = {
-  // Coral is action, and only action. Ink on coral is 6.9:1 — comfortably AA,
-  // and reads warmer than white would.
+  // `coral` is the action green, and only action. Ink on it is 9.2:1 — well past
+  // AA, and holds its weight better than white would on a mid-tone green.
   primary:
-    "bg-coral text-ink border-b-[5px] border-coral-deep hover:bg-[#ff6f50] active:bg-coral-deep active:text-paper",
+    "bg-coral text-ink border-b-[5px] border-coral-deep hover:bg-[#34d399] active:bg-coral-deep active:text-paper",
   cobalt:
-    "bg-cobalt text-paper border-b-[5px] border-cobalt-deep hover:bg-[#2b49ff] active:bg-cobalt-deep",
+    "bg-cobalt text-paper border-b-[5px] border-cobalt-deep hover:bg-[#059669] active:bg-cobalt-deep",
   outline:
     "bg-paper text-ink border-2 border-ink border-b-[5px] hover:bg-paper-2 active:bg-paper-3",
   ghost:

@@ -180,7 +180,7 @@ export default async function HomePage() {
                       <span
                         className="mt-1 h-5 w-5 shrink-0 rounded-full transition-transform duration-200 group-hover:scale-125"
                         style={{
-                          background: ["#1b3bff", "#ff5c39", "#ffc53d"][i % 3],
+                          background: ["#047857", "#10b981", "#ffc53d"][i % 3],
                         }}
                       />
                     </div>

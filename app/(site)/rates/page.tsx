@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getCatalogue, getSettings } from "@/lib/queries";
 import { range, rupees, unitLabel } from "@/lib/format";
 import { ButtonLink } from "@/components/ui/button";
+import { Reveal } from "@/components/ui/reveal";
 import { site } from "@/lib/site";
 
 /**
@@ -44,7 +45,9 @@ export default async function RatesPage() {
           Rate card
         </p>
         <h1 className="display mt-4 text-[clamp(2.6rem,8vw,5rem)]">
-          Scrap rates in {business.city}.
+          Scrap rates in{" "}
+          {/* The one shimmering element on the page. Two would be a casino. */}
+          <span className="shimmer">{business.city}</span>.
         </h1>
         <p className="mt-6 max-w-2xl text-xl font-semibold leading-snug text-ink-2">
           Every rate we pay, published. Metal moves with the commodity market, so
@@ -52,10 +55,14 @@ export default async function RatesPage() {
           scale at your door, in front of you.
         </p>
 
-        <div className="mt-8 flex flex-wrap gap-3">
-          <ButtonLink href="/pick" size="md">
-            Pick your scrap →
-          </ButtonLink>
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          {/* The ring breathes on the primary action only — scrapuncle puts it
+              on their phone input, which is the same job on their page. */}
+          <span className="pulse-ring inline-block rounded-full">
+            <ButtonLink href="/pick" size="md">
+              Pick your scrap →
+            </ButtonLink>
+          </span>
           <ButtonLink href="/book" size="md" variant="outline">
             Book a pickup
           </ButtonLink>
@@ -68,11 +75,11 @@ export default async function RatesPage() {
           ["Minimum pickup", rupees(booking.min_pickup_value)],
           ["Payment", "Cash / UPI"],
           ["Weighing", "Digital"],
-        ].map(([k, v]) => (
-          <div key={k}>
+        ].map(([k, v], i) => (
+          <Reveal key={k} delay={i * 0.06}>
             <dt className="text-[10px] uppercase tracking-[0.14em] text-ink-3">{k}</dt>
             <dd className="mt-1 text-lg font-bold text-ink">{v}</dd>
-          </div>
+          </Reveal>
         ))}
       </dl>
 
@@ -83,8 +90,11 @@ export default async function RatesPage() {
       ) : (
         <div className="mt-16 space-y-14">
           {catalogue.map((cat) => (
-            <section key={cat.id} id={cat.slug} className="scroll-mt-24">
-              <h2 className="display border-b-2 border-ink pb-3 text-3xl sm:text-4xl">
+            <Reveal key={cat.id} as="section" className="scroll-mt-24">
+              <h2
+                id={cat.slug}
+                className="display border-b-2 border-ink pb-3 text-3xl sm:text-4xl"
+              >
                 {cat.name}
               </h2>
 
@@ -100,7 +110,9 @@ export default async function RatesPage() {
                 </thead>
                 <tbody className="divide-y divide-paper-3">
                   {cat.items.map((item) => (
-                    <tr key={item.id}>
+                    // The sweep runs on hover, so it costs nothing until a
+                    // pointer is actually on the row — and never fires on touch.
+                    <tr key={item.id} className="sweep">
                       <th scope="row" className="py-4 pr-4 align-top font-extrabold">
                         <span className="text-lg">{item.name}</span>
                         {item.note && (
@@ -109,7 +121,10 @@ export default async function RatesPage() {
                           </span>
                         )}
                       </th>
-                      <td className="readout py-4 text-right align-top">
+                      {/* Clears the side rail on a phone. Everywhere else the
+                          rail just overlaps decoration; here it would sit on
+                          top of the prices, which are the entire page. */}
+                      <td className="readout py-4 pr-12 text-right align-top sm:pr-0">
                         <span className="block text-lg font-bold">
                           {range(item.price_min, item.price_max)}
                         </span>
@@ -121,7 +136,7 @@ export default async function RatesPage() {
                   ))}
                 </tbody>
               </table>
-            </section>
+            </Reveal>
           ))}
         </div>
       )}

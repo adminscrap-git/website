@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useCrate } from "@/lib/crate";
 import { cn } from "@/lib/cn";
 import { ButtonLink } from "@/components/ui/button";
+import { LocationChip } from "@/components/site/location-chip";
 
 const NAV = [
   { href: "/pick", label: "What we take" },
@@ -45,6 +46,16 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50">
+      {/* A sticky bar has to occlude, or the page scrolls visibly through the
+          wordmark. The blur lives on its own layer rather than on <header>
+          itself: backdrop-filter makes an element a containing block for
+          `position: fixed` descendants, which trapped the menu sheet below
+          inside this 72px box instead of letting it cover the page. */}
+      <div
+        className="absolute inset-0 -z-10 bg-paper/70 backdrop-blur-xl"
+        aria-hidden
+      />
+
       <div className="mx-auto flex max-w-[1400px] items-center gap-3 px-5 py-4 sm:px-8">
         <Link
           href="/"
@@ -54,24 +65,14 @@ export function Header() {
           <Wordmark className="text-[15px]" />
         </Link>
 
-        <nav className="ml-auto hidden items-center gap-1 rounded-full bg-paper-2/80 p-1.5 backdrop-blur-sm md:flex">
-          {NAV.map((n) => (
-            <Link
-              key={n.href}
-              href={n.href}
-              className={cn(
-                "rounded-full px-4 py-2 text-[15px] font-bold transition-colors",
-                pathname === n.href
-                  ? "bg-ink text-paper"
-                  : "text-ink-2 hover:bg-paper-3 hover:text-ink",
-              )}
-            >
-              {n.label}
-            </Link>
-          ))}
-        </nav>
+        {/* Top-left, immediately after the mark — the Swiggy position. Allowed
+            to shrink so a long area name never pushes the menu off a phone. */}
+        <LocationChip className="min-w-0 shrink" />
 
-        <div className="ml-auto flex items-center gap-2 md:ml-0">
+        {/* The inline nav that used to live here is gone: the bottom bar now
+            carries those links at every width, and showing both put the same
+            four destinations on screen twice. */}
+        <div className="ml-auto flex items-center gap-2">
           {count > 0 && (
             <Link
               href="/book"
@@ -99,7 +100,7 @@ export function Header() {
             onClick={() => setOpen(!open)}
             aria-expanded={open}
             aria-label={open ? "Close menu" : "Open menu"}
-            className="grid h-11 w-11 place-items-center rounded-full bg-paper-2 md:hidden"
+            className="grid h-11 w-11 place-items-center rounded-full bg-paper-2"
           >
             <span className="relative block h-4 w-5">
               <span
@@ -125,30 +126,34 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile sheet */}
+      {/* The full menu, now at every width. Full-bleed overlay, but the links
+          are capped to a column — 4xl display type running the width of a
+          1400px screen is a billboard, not a menu. */}
       <div
         className={cn(
-          "fixed inset-x-0 top-[var(--header-h)] bottom-0 z-40 overflow-y-auto bg-paper px-5 pb-10 pt-4 md:hidden",
+          "fixed inset-x-0 top-[var(--header-h)] bottom-0 z-40 overflow-y-auto bg-paper px-5 pb-10 pt-4 sm:px-8",
           "transition-[opacity,transform] duration-200 ease-out",
           open
             ? "translate-y-0 opacity-100"
             : "pointer-events-none -translate-y-3 opacity-0",
         )}
       >
-        <nav className="flex flex-col gap-1">
-          {NAV.map((n) => (
-            <Link
-              key={n.href}
-              href={n.href}
-              className="display border-b border-paper-3 py-5 text-4xl text-ink"
-            >
-              {n.label}
-            </Link>
-          ))}
-        </nav>
-        <ButtonLink href="/book" size="lg" className="mt-8 w-full">
-          Book a pickup
-        </ButtonLink>
+        <div className="mx-auto max-w-lg">
+          <nav className="flex flex-col gap-1">
+            {NAV.map((n) => (
+              <Link
+                key={n.href}
+                href={n.href}
+                className="display border-b border-paper-3 py-5 text-4xl text-ink"
+              >
+                {n.label}
+              </Link>
+            ))}
+          </nav>
+          <ButtonLink href="/book" size="lg" className="mt-8 w-full">
+            Book a pickup
+          </ButtonLink>
+        </div>
       </div>
     </header>
   );

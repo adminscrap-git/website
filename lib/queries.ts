@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { sbPublic } from "@/lib/supabase/public";
+import { normalisePhone } from "@/lib/format";
 import { sbAdmin } from "@/lib/supabase/admin";
 import type {
   Category,
@@ -99,8 +100,8 @@ export const SETTINGS_DEFAULTS: SettingsMap = {
     name: "MINT",
     tagline: "Scrap in. Cash out.",
     city: "Hyderabad",
-    phone: "+91 99999 99999",
-    whatsapp: "919999999999",
+    phone: "+91 95153 21371",
+    whatsapp: "919515321371",
     email: "hello@mint.example",
     address: "",
     maps_url: "",
@@ -148,5 +149,12 @@ export const getSettings = cache(async (): Promise<SettingsMap> => {
           : (row.value as never);
     }
   }
+
+  // The admin panel accepts whatever is typed into the WhatsApp field, and a
+  // 10-digit number there produces a wa.me link that silently goes nowhere.
+  // Normalising here covers every caller at once — several pages build their
+  // own wa.me href straight off `business.whatsapp`.
+  out.business.whatsapp =
+    normalisePhone(out.business.whatsapp) || SETTINGS_DEFAULTS.business.whatsapp;
   return out;
 });

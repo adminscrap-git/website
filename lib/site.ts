@@ -1,3 +1,5 @@
+import { normalisePhone } from "@/lib/format";
+
 /**
  * Static brand + contact facts.
  *
@@ -13,8 +15,8 @@ export const site = {
     "Book a free doorstep scrap pickup. Transparent rates, digital weighing, instant cash or UPI. E-waste, metal, paper, plastic, appliances and furniture.",
 
   // Digits only, with country code — this is what wa.me needs.
-  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP ?? "919999999999",
-  phone: process.env.NEXT_PUBLIC_PHONE ?? "+91 99999 99999",
+  whatsapp: normalisePhone(process.env.NEXT_PUBLIC_WHATSAPP || "919515321371"),
+  phone: process.env.NEXT_PUBLIC_PHONE ?? "+91 95153 21371",
   email: process.env.NEXT_PUBLIC_EMAIL ?? "hello@mint.example",
   city: process.env.NEXT_PUBLIC_CITY ?? "Hyderabad",
 

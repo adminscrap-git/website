@@ -113,7 +113,7 @@ insert into serviceable_pincodes (pincode, area_name) values
 
 -- ── settings ───────────────────────────────────────────────────────
 insert into settings (key, value) values
-  ('business',  '{"name":"MINT","tagline":"Scrap in. Cash out.","city":"Hyderabad","phone":"+91 99999 99999","whatsapp":"919999999999","email":"hello@mint.example","address":"","maps_url":""}'),
+  ('business',  '{"name":"MINT","tagline":"Scrap in. Cash out.","city":"Hyderabad","phone":"+91 95153 21371","whatsapp":"919515321371","email":"hello@mint.example","address":"","maps_url":""}'),
   ('booking',   '{"min_pickup_value":300,"cancel_cutoff_hours":2,"max_days_ahead":14,"show_estimate":true}'),
   ('wa_confirm','"Hi MINT — confirming my scrap pickup.\n\nBooking: {{code}}\nWhen: {{date}}, {{slot}}\nItems: {{items}}\nAddress: {{address}}\n{{maps}}\n\nTrack or cancel: {{track}}"'),
   ('wa_status', '"Hi {{name}}, this is MINT about pickup {{code}} on {{date}} ({{slot}}).\n\nStatus: {{status}}\n\nTrack or cancel: {{track}}"'),

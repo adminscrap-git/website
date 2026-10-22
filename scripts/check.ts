@@ -219,4 +219,16 @@ it("wa.me links are encoded and length-capped", () => {
   assert.ok(decodeURIComponent(long.split("text=")[1]).length <= 1600);
 });
 
+it("a 10-digit number from the admin panel still reaches WhatsApp", () => {
+  // The bug this guards: wa.me/9398952819 is a valid-looking URL that silently
+  // resolves to nothing. It shipped once, from a settings row saved without a
+  // country code, so every path that can produce `business.whatsapp` — the env
+  // fallback in lib/site.ts and the DB read in getSettings — normalises first.
+  assert.equal(normalisePhone("9515321371"), "919515321371");
+  assert.equal(normalisePhone("95153 21371"), "919515321371");
+  assert.equal(normalisePhone("+91 95153 21371"), "919515321371");
+  assert.equal(normalisePhone("919515321371"), "919515321371");
+  assert.equal(normalisePhone("09195153 21371"), "919515321371");
+});
+
 console.log(`\n${checks} checks passed.\n`);
