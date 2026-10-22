@@ -9,11 +9,12 @@ import {
   formatSlot,
   range,
   rupees,
+  telHref,
   todayIST,
 } from "@/lib/format";
 import { buildBookingMessage, waLink } from "@/lib/whatsapp";
 import { STATUS_FLOW, STATUS_LABEL, UNIT_SHORT } from "@/lib/db-types";
-import { site, telHref } from "@/lib/site";
+import { site } from "@/lib/site";
 import { cn } from "@/lib/cn";
 import { BookingManage } from "@/components/site/booking-manage";
 import { ButtonAnchor } from "@/components/ui/button";
@@ -263,7 +264,7 @@ export default async function BookingPage(props: PageProps<"/b/[token]">) {
           <div className="mt-10 border-t-2 border-ink pt-8">
             <p className="text-lg font-bold">{CANCEL_MESSAGE[verdict.reason]}</p>
             <div className="mt-5 flex flex-wrap gap-3">
-              <ButtonAnchor href={telHref} variant="outline">
+              <ButtonAnchor href={telHref(business.phone)} variant="outline">
                 Call {business.phone}
               </ButtonAnchor>
               <ButtonAnchor

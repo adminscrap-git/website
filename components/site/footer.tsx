@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { site, telHref, promises } from "@/lib/site";
+import { promises } from "@/lib/site";
+import { telHref } from "@/lib/format";
+import type { BusinessSettings } from "@/lib/db-types";
 import { Wordmark } from "./header";
 
 const COLUMNS = [
@@ -21,8 +23,10 @@ const COLUMNS = [
   },
 ] as const;
 
-export function Footer() {
-  const waHref = `https://wa.me/${site.whatsapp}`;
+/** Contact details come from the `settings` table via the layout, never from
+ * the build-time environment fallback. */
+export function Footer({ business }: { business: BusinessSettings }) {
+  const waHref = `https://wa.me/${business.whatsapp}`;
 
   return (
     <footer className="mt-24 bg-ink text-paper">
@@ -31,7 +35,7 @@ export function Footer() {
           <div>
             <Wordmark className="text-[22px]" />
             <p className="mt-4 max-w-xs text-lg font-semibold leading-snug text-paper/70">
-              {site.tagline} We collect scrap from your door in {site.city} and pay
+              {business.tagline} We collect scrap from your door in {business.city} and pay
               you on the spot.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
@@ -77,16 +81,16 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href={telHref} className="text-paper/85 transition-colors hover:text-coral">
-                  {site.phone}
+                <a href={telHref(business.phone)} className="text-paper/85 transition-colors hover:text-coral">
+                  {business.phone}
                 </a>
               </li>
               <li>
                 <a
-                  href={`mailto:${site.email}`}
+                  href={`mailto:${business.email}`}
                   className="break-all text-paper/85 transition-colors hover:text-coral"
                 >
-                  {site.email}
+                  {business.email}
                 </a>
               </li>
             </ul>
@@ -94,7 +98,7 @@ export function Footer() {
         </div>
 
         <div className="readout mt-14 flex flex-col gap-3 border-t border-paper/15 pt-6 text-[11px] uppercase tracking-wider text-paper/40 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} {site.name}. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {business.name}. All rights reserved.</p>
           <p>
             Rates shown are indicative — the final amount is confirmed on digital
             weighing at pickup.

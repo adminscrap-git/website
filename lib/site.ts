@@ -47,7 +47,9 @@ function resolveSiteUrl(): string {
   return "http://localhost:3000";
 }
 
-export const telHref = `tel:${site.phone.replace(/[^\d+]/g, "")}`;
+// `telHref` used to live here, bound to the environment number. It is now
+// `telHref(phone)` in lib/format.ts, because the contact details components
+// should render come from the `settings` table, not from the build.
 
 /** Every promise we make on the site, in one place so they stay identical. */
 export const promises = [

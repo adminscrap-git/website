@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { site, telHref } from "@/lib/site";
+import { site } from "@/lib/site";
+import { telHref } from "@/lib/format";
 import { cn } from "@/lib/cn";
 
 /**
@@ -14,7 +15,10 @@ import { cn } from "@/lib/cn";
 
 const SCROLL_REVEAL = 400;
 
-export function SideRail() {
+/** `whatsapp` and `phone` come from the `settings` table via the layout — the
+ * rail is on every page, so reading the build-time fallback here put a stale
+ * number site-wide. */
+export function SideRail({ whatsapp, phone }: { whatsapp: string; phone: string }) {
   const [atTop, setAtTop] = useState(true);
 
   useEffect(() => {
@@ -48,14 +52,14 @@ export function SideRail() {
 
       <Fab
         label="Chat with us on WhatsApp"
-        href={`https://wa.me/${site.whatsapp}`}
+        href={`https://wa.me/${whatsapp}`}
         external
         className="bg-coral"
       >
         <WhatsApp />
       </Fab>
 
-      <Fab label={`Call ${site.phone}`} href={telHref} className="bg-coral-deep">
+      <Fab label={`Call ${phone}`} href={telHref(phone)} className="bg-coral-deep">
         <Phone />
       </Fab>
     </div>

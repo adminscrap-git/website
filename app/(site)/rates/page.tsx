@@ -4,7 +4,6 @@ import { getCatalogue, getSettings } from "@/lib/queries";
 import { range, rupees, unitLabel } from "@/lib/format";
 import { ButtonLink } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
-import { site } from "@/lib/site";
 
 /**
  * Rendered per request rather than prerendered.
@@ -169,7 +168,7 @@ export default async function RatesPage() {
         <p className="mt-8 text-base font-semibold text-paper/50">
           Unsure about something odd? Message us on{" "}
           <a
-            href={`https://wa.me/${site.whatsapp}`}
+            href={`https://wa.me/${business.whatsapp}`}
             className="text-sun underline underline-offset-4"
           >
             WhatsApp

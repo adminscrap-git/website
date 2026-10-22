@@ -121,3 +121,8 @@ export function isValidPhone(raw: string): boolean {
 export function isValidPincode(raw: string): boolean {
   return /^[1-9]\d{5}$/.test(raw.trim());
 }
+
+/** `tel:` href from a human-formatted number — keeps digits and a leading +. */
+export function telHref(phone: string): string {
+  return `tel:${phone.replace(/[^\d+]/g, "")}`;
+}

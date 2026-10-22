@@ -3,7 +3,6 @@ import Link from "next/link";
 import { getSettings } from "@/lib/queries";
 import { rupees } from "@/lib/format";
 import { ButtonLink } from "@/components/ui/button";
-import { site } from "@/lib/site";
 
 /**
  * Rendered per request rather than prerendered.
@@ -138,7 +137,7 @@ export default async function FaqPage() {
         </p>
         <div className="mt-7 flex flex-wrap gap-3">
           <a
-            href={`https://wa.me/${site.whatsapp}`}
+            href={`https://wa.me/${business.whatsapp}`}
             target="_blank"
             rel="noopener noreferrer"
             className="rounded-full bg-sun px-7 py-3.5 text-lg font-extrabold text-ink border-b-[5px] border-[#c99516] active:translate-y-[5px] active:border-b-0"
