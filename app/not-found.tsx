@@ -25,7 +25,7 @@ export default function NotFound() {
             href="/rates"
             className="rounded-full border-2 border-ink border-b-[5px] bg-paper px-7 py-3.5 text-lg font-extrabold active:translate-y-[5px] active:border-b-0"
           >
-            Browse the shelf
+            Browse the rate card
           </Link>
         </div>
       </div>

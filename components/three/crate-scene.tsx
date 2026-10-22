@@ -10,7 +10,7 @@ import { C } from "./palette";
 /**
  * The crate, filling up.
  *
- * This is the only WebGL canvas on /pick. Item cards stay flat and fast —
+ * This is the only WebGL canvas on /rates. Item cards stay flat and fast —
  * people scanning forty rates want type, not geometry — and the 3D is spent
  * entirely on the one moment that should feel good: something landing in the
  * crate with a bounce.

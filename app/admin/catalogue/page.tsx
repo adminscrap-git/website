@@ -23,7 +23,7 @@ export default async function CataloguePage() {
       <header>
         <h1 className="display text-4xl">Catalogue</h1>
         <p className="mt-1.5 max-w-2xl text-base font-semibold text-ink-2">
-          Everything here shows up on the shelf and the rate card immediately.
+          Everything here shows up on the rate card immediately.
           Changing a price never rewrites what a past customer was quoted —
           bookings keep their own snapshot.
         </p>
@@ -124,7 +124,7 @@ export default async function CataloguePage() {
       <div className="mt-6">
         <Panel
           title="New category"
-          description="Groups items on the shelf and the rate card."
+          description="Groups items on the rate card."
         >
           <CategoryForm />
         </Panel>

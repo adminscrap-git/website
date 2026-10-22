@@ -119,7 +119,7 @@ export default async function HomePage() {
               {
                 n: "01",
                 title: "Pick what you've got",
-                body: `Browse the shelf and tap whatever's lying around — ${totalItems} things across ${catalogue.length} categories. Not sure what it's called? Skip straight to the form and describe it.`,
+                body: `Browse the rate card and tap whatever's lying around — ${totalItems} things across ${catalogue.length} categories. Not sure what it's called? Skip straight to the form and describe it.`,
               },
               {
                 n: "02",
@@ -147,7 +147,7 @@ export default async function HomePage() {
           <Reveal delay={0.15}>
             <div className="mt-16">
               <ButtonLink href="/rates" size="lg" className="bg-sun border-[#c99516] hover:bg-[#ffd062]">
-                Start with the shelf →
+                See the rates →
               </ButtonLink>
             </div>
           </Reveal>

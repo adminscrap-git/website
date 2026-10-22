@@ -174,14 +174,14 @@ export function BookForm({
                 href="/rates"
                 className="text-base font-bold text-cobalt underline underline-offset-4"
               >
-                ← Add more from the shelf
+                ← Add more from the rate card
               </Link>
             </div>
           </>
         ) : (
           <div data-field="items">
             <p className="text-lg font-semibold text-ink-2">
-              Nothing picked from the shelf — no problem. Just describe roughly
+              Nothing picked from the rate card — no problem. Just describe roughly
               what you&apos;ve got and we&apos;ll price it at your door.
             </p>
             <div className="mt-5">
@@ -204,7 +204,7 @@ export function BookForm({
             <p className="mt-4 text-sm font-semibold text-ink-3">
               Prefer to pick from a list?{" "}
               <Link href="/rates" className="text-cobalt underline underline-offset-4">
-                Browse the shelf
+                Browse the rate card
               </Link>
               .
             </p>
@@ -216,7 +216,7 @@ export function BookForm({
             <Field
               label="Anything else we should bring the van for?"
               htmlFor="freeTextExtra"
-              hint="Optional — things you couldn't find on the shelf."
+              hint="Optional — things you couldn't find on the rate card."
             >
               <Textarea
                 id="freeTextExtra"

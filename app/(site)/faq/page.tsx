@@ -28,7 +28,7 @@ export default async function FaqPage() {
   const faqs: { q: string; a: string }[] = [
     {
       q: "How does a pickup actually work?",
-      a: `Pick what you've got from the shelf (or just describe it on the form), choose a date and a two-hour window, and give us your address. We arrive in that window, weigh everything in front of you on a certified digital scale, agree the amount, and pay you cash or UPI before we load the van.`,
+      a: `Pick what you've got from the rate card (or just describe it on the form), choose a date and a two-hour window, and give us your address. We arrive in that window, weigh everything in front of you on a certified digital scale, agree the amount, and pay you cash or UPI before we load the van.`,
     },
     {
       q: "Do I need to create an account?",
@@ -158,7 +158,7 @@ export default async function FaqPage() {
       <p className="mt-10 text-center text-base font-semibold text-ink-2">
         Ready when you are —{" "}
         <Link href="/rates" className="text-cobalt underline underline-offset-4">
-          browse the shelf
+          browse the rate card
         </Link>{" "}
         or{" "}
         <Link href="/book" className="text-cobalt underline underline-offset-4">

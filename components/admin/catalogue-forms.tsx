@@ -127,7 +127,7 @@ export function CategoryForm({ category }: { category?: Category }) {
         </AdminField>
       </div>
 
-      <AdminField label="Description" hint="One line, shown on the shelf.">
+      <AdminField label="Description" hint="One line, shown on the rate card.">
         <input
           name="description"
           defaultValue={category?.description ?? ""}

@@ -1,7 +1,7 @@
 /**
  * Which toy stands in for each category.
  *
- * Deliberately NOT a "use client" module. The server renders /pick and needs to
+ * Deliberately NOT a "use client" module. The server renders /rates and needs to
  * resolve this mapping before handing it to the client — and a server component
  * can't call a function that lives in a client module. Keeping the plain data
  * here, separate from the components in toys.tsx, lets both sides import it.
