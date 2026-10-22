@@ -157,7 +157,7 @@ export default async function FaqPage() {
 
       <p className="mt-10 text-center text-base font-semibold text-ink-2">
         Ready when you are —{" "}
-        <Link href="/pick" className="text-cobalt underline underline-offset-4">
+        <Link href="/rates" className="text-cobalt underline underline-offset-4">
           browse the shelf
         </Link>{" "}
         or{" "}

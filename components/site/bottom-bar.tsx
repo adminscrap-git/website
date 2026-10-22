@@ -25,11 +25,19 @@ type Tab = {
   crate?: boolean;
 };
 
+/**
+ * "Rates" is the merged catalogue — the rate card you can add from.
+ *
+ * Crate and Book are one tab, not two, because /book IS the crate: the form
+ * renders your picked items above the address fields. Two tabs pointing at one
+ * URL would both light up as the current page. The badge rides on it, so the
+ * count is still visible from anywhere, and scheduling stays one tap away.
+ */
 const TABS: Tab[] = [
   { href: "/", label: "Home", icon: HomeIcon },
-  { href: "/pick", label: "What we take", icon: ShelfIcon },
-  { href: "/book", label: "Crate", icon: CrateIcon, crate: true },
   { href: "/rates", label: "Rates", icon: RatesIcon },
+  { href: "/book", label: "Book", icon: CrateIcon, crate: true },
+  { href: "/faq", label: "FAQ", icon: ShelfIcon },
   { href: "/contact", label: "Contact", icon: AccountIcon },
 ];
 
@@ -40,7 +48,9 @@ export function BottomBar() {
   return (
     <nav
       aria-label="Primary"
-      className="fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+      // The gradient is not decoration: the bar is a floating pill, so without
+      // it the page scrolls visibly through the gutter around and below it.
+      className="fixed inset-x-0 bottom-0 z-40 bg-gradient-to-t from-paper via-paper/85 to-transparent px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-5"
     >
       {/* Capped and centred rather than full-bleed: stretched across 1400px it
           reads as a footer, not a control. Same height at every width so

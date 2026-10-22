@@ -3,13 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useCrate } from "@/lib/crate";
 import { cn } from "@/lib/cn";
 import { ButtonLink } from "@/components/ui/button";
 import { LocationChip } from "@/components/site/location-chip";
 
 const NAV = [
-  { href: "/pick", label: "What we take" },
   { href: "/rates", label: "Rates" },
   { href: "/faq", label: "FAQ" },
   { href: "/contact", label: "Contact" },
@@ -27,7 +25,6 @@ export function Wordmark({ className }: { className?: string }) {
 
 export function Header() {
   const pathname = usePathname();
-  const { count } = useCrate();
 
   // The sheet remembers which route it was opened on. Navigating changes the
   // pathname, which closes it during render — no effect, no flash of the old
@@ -73,17 +70,10 @@ export function Header() {
             carries those links at every width, and showing both put the same
             four destinations on screen twice. */}
         <div className="ml-auto flex items-center gap-2">
-          {count > 0 && (
-            <Link
-              href="/book"
-              className="readout flex items-center gap-2 rounded-full bg-cobalt px-4 py-2.5 text-sm font-bold text-paper"
-            >
-              <CrateGlyph />
-              {count}
-              <span className="sr-only">items in your crate</span>
-            </Link>
-          )}
-
+          {/* The crate badge that lived here is gone. The Book tab in the
+              bottom bar carries the count at every width now, and two badges
+              competing for a 390px header is what squeezed the location chip
+              down to "Set lo…". */}
           {/* Wrapped rather than `hidden sm:inline-flex` on the button itself:
               the button's own base class sets `inline-flex`, and two display
               utilities at equal specificity are decided by stylesheet order,
@@ -156,19 +146,5 @@ export function Header() {
         </div>
       </div>
     </header>
-  );
-}
-
-function CrateGlyph() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-      <path
-        d="M1.5 4.5h13v9a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-9Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-      <path d="M1 4.5 3 1.5h10l2 3" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-    </svg>
   );
 }

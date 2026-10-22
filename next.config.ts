@@ -7,6 +7,12 @@ const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
   : undefined;
 
 const nextConfig: NextConfig = {
+  // /pick and /rates listed the same catalogue — one you could read, one you
+  // could act on. They're merged onto /rates, which is the URL that ranks.
+  // Permanent so search engines move the old one over rather than keeping both.
+  async redirects() {
+    return [{ source: "/pick", destination: "/rates", permanent: true }];
+  },
   images: {
     remotePatterns: supabaseHost
       ? [

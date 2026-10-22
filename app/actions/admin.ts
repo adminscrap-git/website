@@ -381,7 +381,6 @@ export async function saveTemplates(
 
 function revalidateCatalogue() {
   revalidatePath("/admin/catalogue");
-  revalidatePath("/pick");
   revalidatePath("/rates");
   revalidatePath("/");
 }

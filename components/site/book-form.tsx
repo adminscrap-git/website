@@ -171,7 +171,7 @@ export function BookForm({
 
             <div className="mt-6">
               <Link
-                href="/pick"
+                href="/rates"
                 className="text-base font-bold text-cobalt underline underline-offset-4"
               >
                 ← Add more from the shelf
@@ -203,7 +203,7 @@ export function BookForm({
             </div>
             <p className="mt-4 text-sm font-semibold text-ink-3">
               Prefer to pick from a list?{" "}
-              <Link href="/pick" className="text-cobalt underline underline-offset-4">
+              <Link href="/rates" className="text-cobalt underline underline-offset-4">
                 Browse the shelf
               </Link>
               .

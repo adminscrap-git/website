@@ -22,7 +22,7 @@ export default function NotFound() {
             Back home
           </Link>
           <Link
-            href="/pick"
+            href="/rates"
             className="rounded-full border-2 border-ink border-b-[5px] bg-paper px-7 py-3.5 text-lg font-extrabold active:translate-y-[5px] active:border-b-0"
           >
             Browse the shelf

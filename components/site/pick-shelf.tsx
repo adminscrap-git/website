@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
@@ -82,7 +81,9 @@ export function PickShelf({
         </ul>
       </nav>
 
-      <div className="space-y-20 pb-56 lg:pb-32">
+      {/* Only reserve room for the dock when the dock is actually there —
+          otherwise an empty crate leaves a screen of dead space. */}
+      <div className={cn("space-y-20", count > 0 ? "pb-72 lg:pb-80" : "pb-16")}>
         {catalogue.map((cat) => (
           <section key={cat.id} id={cat.slug} className="scroll-mt-40">
             <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b-2 border-ink pb-4">
@@ -188,7 +189,13 @@ export function PickShelf({
             animate={{ y: 0, opacity: 1 }}
             exit={reduced ? undefined : { y: 120, opacity: 0 }}
             transition={{ type: "spring", stiffness: 320, damping: 30 }}
-            className="fixed inset-x-3 bottom-3 z-40 sm:inset-x-5 sm:bottom-5 lg:left-auto lg:right-6 lg:w-[380px]"
+            // Sits above the tab bar, and stops short of the right edge so it
+            // never lands under the floating action rail.
+            className={cn(
+              "fixed z-40 bottom-[calc(var(--bottombar-h)+0.75rem)]",
+              "left-3 right-20 sm:left-5 sm:right-24",
+              "lg:left-auto lg:right-24 lg:w-[380px]",
+            )}
             aria-label="Your crate"
           >
             <div className="overflow-hidden rounded-toy border-2 border-ink bg-paper">
@@ -268,16 +275,9 @@ export function PickShelf({
         )}
       </AnimatePresence>
 
-      {count === 0 && (
-        <div className="fixed inset-x-0 bottom-0 z-30 border-t-2 border-ink bg-paper px-5 py-4 lg:hidden">
-          <p className="text-center text-sm font-bold text-ink-2">
-            Nothing in the crate yet —{" "}
-            <Link href="/book" className="text-cobalt underline underline-offset-4">
-              or skip and just book
-            </Link>
-          </p>
-        </div>
-      )}
+      {/* The empty-crate prompt that used to be pinned here is gone: it sat at
+          bottom-0, which is now the tab bar, and it said the same thing as the
+          page header's "describe it instead" and the Book tab. */}
     </>
   );
 }

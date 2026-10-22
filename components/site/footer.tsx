@@ -8,9 +8,8 @@ const COLUMNS = [
   {
     title: "Book",
     links: [
-      { href: "/pick", label: "What we take" },
-      { href: "/book", label: "Book a pickup" },
-      { href: "/rates", label: "Today's rates" },
+      { href: "/rates", label: "Rates & what we take" },
+      { href: "/book", label: "Schedule a pickup" },
     ],
   },
   {

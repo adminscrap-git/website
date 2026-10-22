@@ -54,7 +54,7 @@ export default async function HomePage() {
           </p>
 
           <div className="mt-9 flex flex-wrap gap-3">
-            <ButtonLink href="/pick" size="lg">
+            <ButtonLink href="/rates" size="lg">
               Pick your scrap →
             </ButtonLink>
             <ButtonLink href="/book" size="lg" variant="outline">
@@ -146,7 +146,7 @@ export default async function HomePage() {
 
           <Reveal delay={0.15}>
             <div className="mt-16">
-              <ButtonLink href="/pick" size="lg" className="bg-sun border-[#c99516] hover:bg-[#ffd062]">
+              <ButtonLink href="/rates" size="lg" className="bg-sun border-[#c99516] hover:bg-[#ffd062]">
                 Start with the shelf →
               </ButtonLink>
             </div>
@@ -171,7 +171,7 @@ export default async function HomePage() {
             return (
               <Reveal key={cat.id} delay={Math.min(i, 5) * 0.06}>
                 <Link
-                  href={`/pick#${cat.slug}`}
+                  href={`/rates#${cat.slug}`}
                   className="group flex h-full flex-col justify-between rounded-toy border-2 border-transparent bg-paper-2 p-7 transition-colors hover:border-ink hover:bg-paper"
                 >
                   <div>
@@ -296,7 +296,7 @@ export default async function HomePage() {
               Takes about a minute. We&apos;ll come to you.
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-3">
-              <ButtonLink href="/pick" size="lg" variant="cobalt">
+              <ButtonLink href="/rates" size="lg" variant="cobalt">
                 Pick your scrap →
               </ButtonLink>
               <ButtonLink
