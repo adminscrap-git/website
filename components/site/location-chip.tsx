@@ -94,7 +94,10 @@ export function LocationChip({ className }: { className?: string }) {
           {text}
         </span>
       </span>
-      <Chevron className="shrink-0 text-ink-3 transition-transform group-hover:translate-y-px" />
+      {/* ml-auto so the chevron parks on the right when the chip is laid out
+          as a full-width bar. A shrink-to-fit button has no free space for it
+          to claim, so the inline form is unaffected. */}
+      <Chevron className="ml-auto shrink-0 text-ink-3 transition-transform group-hover:translate-y-px" />
     </button>
   );
 }

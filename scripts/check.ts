@@ -26,6 +26,18 @@ import { estimate } from "../lib/estimate";
 import { canCancel } from "../lib/booking-rules";
 import { fillTemplate, summariseItems, waLink } from "../lib/whatsapp";
 import type { BookingItem, BookingStatus } from "../lib/db-types";
+import { ICON_SLUGS } from "../components/site/item-icon";
+
+/** The categories 0002_seed.sql creates. The icon set must cover all of them. */
+const SEEDED_CATEGORIES = [
+  "e-waste",
+  "appliances",
+  "metal",
+  "paper",
+  "plastic",
+  "batteries",
+  "furniture",
+];
 
 let checks = 0;
 function it(name: string, fn: () => void) {
@@ -230,5 +242,18 @@ it("a 10-digit number from the admin panel still reaches WhatsApp", () => {
   assert.equal(normalisePhone("919515321371"), "919515321371");
   assert.equal(normalisePhone("09195153 21371"), "919515321371");
 });
+
+console.log(`\nrate card`);
+
+it("every category has an icon, so a new item never shows a blank card", () => {
+  // Items each get their own mark, but the office adds items from the admin
+  // and those can't be known here — they fall back to the category. If a
+  // category has no mark either, the card shows a generic box and the only
+  // way anyone finds out is by scrolling past it.
+  for (const slug of SEEDED_CATEGORIES) {
+    assert.ok(ICON_SLUGS.includes(slug), `no icon for category "${slug}"`);
+  }
+});
+
 
 console.log(`\n${checks} checks passed.\n`);

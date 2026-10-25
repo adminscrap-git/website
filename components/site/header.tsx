@@ -55,10 +55,6 @@ export function Header() {
           <Wordmark className="text-[15px]" />
         </Link>
 
-        {/* Top-left, immediately after the mark — the Swiggy position. Allowed
-            to shrink so a long area name never pushes the menu off a phone. */}
-        <LocationChip className="min-w-0 shrink" />
-
         {/* The inline nav that used to live here is gone: the bottom bar now
             carries those links at every width, and showing both put the same
             four destinations on screen twice. */}
@@ -106,6 +102,16 @@ export function Header() {
               />
             </span>
           </button>
+        </div>
+      </div>
+
+      {/* Its own row under the mark rather than beside it. Sharing the top line
+          meant a long area name and the menu competed for the same 390px, and
+          the name lost — "Set lo…". Full width also makes it a real target:
+          picking where the van comes is the first decision on the page. */}
+      <div className="border-t border-paper-3/70">
+        <div className="mx-auto max-w-[1400px] px-2 sm:px-5">
+          <LocationChip className="w-full rounded-none px-3 py-2.5" />
         </div>
       </div>
 
