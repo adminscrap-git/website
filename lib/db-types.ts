@@ -228,9 +228,26 @@ export type ImpactSettings = {
   kg_co2_per_kg_ewaste: number;
 };
 
+/**
+ * The service area, as a circle on a map.
+ *
+ * Replaces the pincode list as the gate. `serviceable_pincodes` survives as
+ * the fallback for when geocoding is unavailable — without a Google key, or
+ * when Google cannot place an address, turning every customer away would be
+ * far worse than consulting the old list.
+ */
+export type AreaSettings = {
+  depot_lat: number;
+  depot_lng: number;
+  radius_km: number;
+  /** Shown to a customer who falls outside it. */
+  label: string;
+};
+
 export type SettingsMap = {
   business: BusinessSettings;
   booking: BookingSettings;
+  area: AreaSettings;
   wa_confirm: string;
   wa_status: string;
   impact: ImpactSettings;

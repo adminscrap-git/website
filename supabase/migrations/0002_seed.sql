@@ -122,6 +122,7 @@ insert into serviceable_pincodes (pincode, area_name) values
 
 -- ── settings ───────────────────────────────────────────────────────
 insert into settings (key, value) values
+  ('area',      '{"depot_lat":17.385,"depot_lng":78.4867,"radius_km":15,"label":"Hyderabad"}'),
   ('business',  '{"name":"ScrapSquad","tagline":"your scrap, our squad","city":"Hyderabad","phone":"+91 95153 21371","whatsapp":"919515321371","email":"hello@scrapsquad.example","address":"","maps_url":""}'),
   ('booking',   '{"min_pickup_value":300,"cancel_cutoff_hours":2,"max_days_ahead":14,"show_estimate":true}'),
   ('wa_confirm','"Hi ScrapSquad — confirming my scrap pickup.\n\nBooking: {{code}}\nWhen: {{date}}, {{slot}}\nItems: {{items}}\nAddress: {{address}}\n{{maps}}\n\nTrack or cancel: {{track}}"'),

@@ -15,6 +15,7 @@ import {
   todayIST,
 } from "@/lib/format";
 import { enqueue, adminRecipient } from "@/lib/notify";
+import { checkServiceArea } from "@/lib/geo";
 import { site } from "@/lib/site";
 import type { BookingStatus, Item, TimeSlot } from "@/lib/db-types";
 
@@ -34,6 +35,13 @@ export type NewBookingInput = {
   landmark?: string;
   pincode: string;
   mapsUrl?: string;
+  /**
+   * Resolved by Places autocomplete in the browser when available. Advisory
+   * only — the server re-checks the area and never trusts these for anything
+   * but saving itself a geocode.
+   */
+  lat?: number;
+  lng?: number;
   pickupDate: string;
   slotId: string;
   /** Item ids and quantities from the crate. Prices are ignored if sent. */
@@ -92,16 +100,26 @@ export async function createBooking(
     );
 
   // ── service area ─────────────────────────────────────────────────
-  const { data: area } = await db
-    .from("serviceable_pincodes")
-    .select("pincode")
-    .eq("pincode", pincode)
-    .eq("is_active", true)
-    .maybeSingle();
+  // A circle on a map, with the pincode list as the fallback — see lib/geo.ts
+  // for why both. The client may send coordinates it already resolved through
+  // Places autocomplete, which saves a server geocode and is more accurate
+  // than re-parsing the typed address.
+  const coords =
+    Number.isFinite(input.lat) && Number.isFinite(input.lng)
+      ? { lat: Number(input.lat), lng: Number(input.lng) }
+      : null;
 
-  if (!area)
+  const area = await checkServiceArea({
+    address: [addressLine, input.landmark?.trim(), pincode, "India"]
+      .filter(Boolean)
+      .join(", "),
+    pincode,
+    coords,
+  });
+
+  if (!area.serviceable)
     return fail(
-      "We don't collect from that pincode yet — leave your number and we'll tell you when we do.",
+      "We don't collect from there yet — leave your number and we'll tell you when we do.",
       "pincode",
     );
 
@@ -192,7 +210,9 @@ export async function createBooking(
       address_line: addressLine,
       landmark: input.landmark?.trim() || null,
       pincode,
-      maps_url: input.mapsUrl?.trim() || null,
+      maps_url:
+        input.mapsUrl?.trim() ||
+        (coords ? `https://www.google.com/maps/search/?api=1&query=${coords.lat},${coords.lng}` : null),
       pickup_date: input.pickupDate,
       slot_id: slot.id,
       free_text_items: freeText,

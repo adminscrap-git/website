@@ -2,13 +2,16 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { getAllPincodes, getWaitlistByPincode } from "@/lib/admin-queries";
 import { Panel } from "@/components/admin/ui";
 import { PincodeForm, PincodeRow } from "@/components/admin/ops-forms";
+import { AreaMap } from "@/components/admin/area-map";
+import { getSettings } from "@/lib/queries";
 
 export default async function PincodesPage() {
   await requireAdmin("super_admin");
 
-  const [pincodes, waitlist] = await Promise.all([
+  const [pincodes, waitlist, settings] = await Promise.all([
     getAllPincodes(),
     getWaitlistByPincode(),
+    getSettings(),
   ]);
 
   const covered = new Set(pincodes.map((p) => p.pincode));
@@ -19,12 +22,26 @@ export default async function PincodesPage() {
       <header>
         <h1 className="display text-4xl">Service area</h1>
         <p className="mt-1.5 max-w-2xl text-base font-semibold text-ink-2">
-          The booking form checks this list live. Anyone outside it is asked for
-          their number instead of hitting a dead end — that&apos;s the waitlist
-          below, and it&apos;s the honest answer to &ldquo;where should we
+          The circle below is what the booking form checks. The pincode list is
+          the fallback for addresses Google can&apos;t place, and the list of
+          exceptions you serve outside the circle. Anyone outside both is asked
+          for their number instead of hitting a dead end — that&apos;s the
+          waitlist, and it&apos;s the honest answer to &ldquo;where should we
           expand?&rdquo;
         </p>
       </header>
+
+      <div className="mt-8">
+        <Panel
+          title="Where the van goes"
+          description="Drag the pin to your depot, drag the circle edge to set how far out you collect."
+        >
+          <AreaMap
+            area={settings.area}
+            mapsKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY ?? null}
+          />
+        </Panel>
+      </div>
 
       <div className="mt-8 grid gap-3 lg:grid-cols-2">
         <Panel

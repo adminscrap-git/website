@@ -106,6 +106,13 @@ export const SETTINGS_DEFAULTS: SettingsMap = {
     address: "",
     maps_url: "",
   },
+  // Hyderabad city centre until the office sets its own depot pin.
+  area: {
+    depot_lat: 17.385,
+    depot_lng: 78.4867,
+    radius_km: 15,
+    label: "Hyderabad",
+  },
   booking: {
     min_pickup_value: 300,
     cancel_cutoff_hours: 2,

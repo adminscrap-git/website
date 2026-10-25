@@ -8,12 +8,23 @@ import { useCrate } from "@/lib/crate";
 import { estimate } from "@/lib/estimate";
 import { formatDate, formatSlot, range, rupees } from "@/lib/format";
 import { cn } from "@/lib/cn";
-import type { BookingSettings, CategoryWithItems, Item, TimeSlot } from "@/lib/db-types";
+import type {
+  AreaSettings,
+  BookingSettings,
+  CategoryWithItems,
+  Item,
+  TimeSlot,
+} from "@/lib/db-types";
 import { createBooking, joinWaitlist, slotAvailability } from "@/app/actions/booking";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Textarea } from "@/components/ui/field";
+import { AddressField } from "@/components/site/address-field";
+import { distanceKm } from "@/lib/geo-shared";
 
 type Errors = Record<string, string>;
+
+const placesInput =
+  "w-full rounded-sm border-2 border-paper-3 bg-paper px-4 py-3 text-base font-semibold focus:border-cobalt focus:outline-none";
 
 /**
  * True when the slot's label already states its own time window, so the
@@ -30,6 +41,8 @@ export function BookForm({
   catalogue,
   slots,
   pincodes,
+  area,
+  mapsKey,
   rules,
   today,
   maxDate,
@@ -37,6 +50,8 @@ export function BookForm({
   catalogue: CategoryWithItems[];
   slots: TimeSlot[];
   pincodes: string[];
+  area: AreaSettings;
+  mapsKey: string | null;
   rules: BookingSettings;
   today: string;
   maxDate: string;
@@ -52,6 +67,8 @@ export function BookForm({
   const [landmark, setLandmark] = useState("");
   const [pincode, setPincode] = useState("");
   const [mapsUrl, setMapsUrl] = useState("");
+  /** Set only when the customer picks a Places suggestion. */
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [pickupDate, setPickupDate] = useState(today);
   const [slotId, setSlotId] = useState("");
   const [freeText, setFreeText] = useState("");
@@ -104,7 +121,17 @@ export function BookForm({
 
   const pincodeClean = pincode.trim();
   const pincodeComplete = /^[1-9]\d{5}$/.test(pincodeClean);
-  const outOfArea = pincodeComplete && !pincodes.includes(pincodeClean);
+
+  // The server decides, in lib/geo.ts. This only mirrors it so the customer
+  // is not made to fill in a whole form before being told no.
+  //
+  // Coordinates win when we have them: the pincode list is the fallback, and
+  // warning off a valid address because its pincode is not on a hand-kept list
+  // is exactly the false rejection the radius was meant to end.
+  const outOfArea = coords
+    ? distanceKm(coords, { lat: area.depot_lat, lng: area.depot_lng }) >
+        area.radius_km && !pincodes.includes(pincodeClean)
+    : pincodeComplete && !pincodes.includes(pincodeClean);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -119,6 +146,8 @@ export function BookForm({
         landmark,
         pincode: pincodeClean,
         mapsUrl,
+        lat: coords?.lat,
+        lng: coords?.lng,
         pickupDate,
         slotId,
         lines,
@@ -357,6 +386,30 @@ export function BookForm({
               />
             </Field>
           </div>
+
+          {mapsKey && (
+            <div className="sm:col-span-2">
+              <Field label="Find your address" htmlFor="address-search">
+                <AddressField
+                  mapsKey={mapsKey}
+                  id="address-search"
+                  name="addressSearch"
+                  className={placesInput}
+                  placeholder="Search your building, street or society"
+                  onResolved={(r) => {
+                    setCoords({ lat: r.lat, lng: r.lng });
+                    if (r.pincode) setPincode(r.pincode);
+                    // Prefill rather than overwrite: whatever they have
+                    // already typed is usually the flat number, and that is
+                    // the one part Google will never know.
+                    setAddressLine((prev) =>
+                      prev.trim() ? prev : (r.formatted ?? ""),
+                    );
+                  }}
+                />
+              </Field>
+            </div>
+          )}
 
           <div className="sm:col-span-2" data-field="addressLine">
             <Field label="Pickup address" htmlFor="address" required error={errors.addressLine}>

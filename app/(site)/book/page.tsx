@@ -57,6 +57,8 @@ export default async function BookPage() {
           catalogue={catalogue}
           slots={slots}
           pincodes={pincodes.map((p) => p.pincode)}
+          area={settings.area}
+          mapsKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY ?? null}
           rules={settings.booking}
           today={today}
           maxDate={addDays(today, settings.booking.max_days_ahead)}

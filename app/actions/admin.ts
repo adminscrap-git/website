@@ -377,6 +377,54 @@ export async function saveTemplates(
   return { ok: "Message templates saved." };
 }
 
+// ── service area ────────────────────────────────────────────────────
+
+/**
+ * The depot pin and how far the van goes.
+ *
+ * Bounds are enforced here, not just in the number inputs: this is a settings
+ * row that decides whether a customer can book at all, and a radius of 0 or a
+ * latitude of 900 would quietly refuse everybody.
+ */
+export async function saveServiceArea(
+  _prev: FormState,
+  fd: FormData,
+): Promise<FormState> {
+  const gate = await assertAdmin("super_admin");
+  if (!gate.ok) return { error: gate.error };
+
+  const lat = num(fd, "depot_lat");
+  const lng = num(fd, "depot_lng");
+  const radius = num(fd, "radius_km");
+  const label = str(fd, "label") || "our service area";
+
+  if (!Number.isFinite(lat) || lat < -90 || lat > 90)
+    return { error: "Latitude must be between -90 and 90." };
+  if (!Number.isFinite(lng) || lng < -180 || lng > 180)
+    return { error: "Longitude must be between -180 and 180." };
+  if (!Number.isFinite(radius) || radius < 1 || radius > 100)
+    return { error: "Radius must be between 1 and 100 km." };
+
+  // Upsert, not update: the `area` row does not exist on a database seeded
+  // before 0007, and an update matching nothing fails silently.
+  const { error } = await sbAdmin()
+    .from("settings")
+    .upsert(
+      {
+        key: "area",
+        value: { depot_lat: lat, depot_lng: lng, radius_km: radius, label },
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "key" },
+    );
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin/pincodes");
+  revalidatePath("/book");
+  return { ok: `Saving within ${radius} km of that pin.` };
+}
+
 // ── revalidation ────────────────────────────────────────────────────
 
 function revalidateCatalogue() {

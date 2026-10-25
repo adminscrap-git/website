@@ -149,3 +149,14 @@ on conflict (id) do update
 -- No select/insert policy is created on purpose. Uploads and signed URLs are
 -- minted server-side with the service role, which bypasses RLS; adding an
 -- authenticated policy here would let any signed-in user enumerate the bucket.
+
+-- ── service area ───────────────────────────────────────────────────
+-- The circle that replaces the pincode list as the booking gate. Defaults to
+-- Hyderabad city centre; the office moves the pin on the admin map.
+--
+-- serviceable_pincodes is deliberately left in place. Geocoding needs a Google
+-- key and a working network, and an address Google cannot place is not the
+-- customer's fault — the list is what answers when the circle cannot.
+insert into settings (key, value) values
+  ('area', '{"depot_lat":17.385,"depot_lng":78.4867,"radius_km":15,"label":"Hyderabad"}')
+on conflict (key) do nothing;

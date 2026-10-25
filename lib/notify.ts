@@ -1,10 +1,12 @@
 import "server-only";
+import { after } from "next/server";
 import { sbAdmin } from "@/lib/supabase/admin";
 import { getSettings } from "@/lib/queries";
 import { fillTemplate } from "@/lib/whatsapp";
 import { normalisePhone, telHref } from "@/lib/format";
 import { site } from "@/lib/site";
 import type { Audience, NotificationChannel } from "@/lib/db-types";
+import { metaConfig, sendTemplate } from "@/lib/whatsapp-meta";
 
 /**
  * The outbox.
@@ -118,11 +120,35 @@ export async function enqueue(input: EnqueueInput): Promise<void> {
         payload: input.vars,
         status: "queued",
       });
+    // Send after the response has gone out, not before it. The customer sees
+    // their confirmation page at the same speed whether Meta is fast, slow or
+    // down — and a provider outage leaves the row queued for the cron rather
+    // than hanging the booking.
+    scheduleFlush();
   } catch (err) {
     // Swallowed on purpose. A booking that succeeded must not be reported as
     // failed because the outbox insert did; the row is recoverable, the
     // customer's trust is not.
     console.error("notify.enqueue failed", input.templateKey, err);
+  }
+}
+
+/**
+ * Queues a flush for after the current response.
+ *
+ * `after()` only exists inside a request, and a floating promise in a
+ * serverless function is killed the moment the response ends — so this is the
+ * only way to send promptly without making the user wait. If it is unavailable
+ * the message simply waits for the cron, which is why the failure is ignored.
+ */
+function scheduleFlush(): void {
+  if (!hasProvider()) return;
+  try {
+    after(async () => {
+      await flush(10);
+    });
+  } catch {
+    // Outside a request scope. The cron will pick it up.
   }
 }
 
@@ -137,21 +163,29 @@ export async function enqueue(input: EnqueueInput): Promise<void> {
  */
 type Driver = {
   name: string;
-  send(to: string, body: string): Promise<{ id?: string }>;
+  send(
+    to: string,
+    templateKey: TemplateKey,
+    vars: Record<string, unknown>,
+  ): Promise<{ id?: string }>;
 };
 
 /**
- * No provider is wired up yet, by decision rather than oversight.
+ * Meta WhatsApp Cloud API, live as soon as the credentials exist.
  *
- * Returning null keeps every message in `queued` and visible in the admin
- * booking page with a "send by hand" link — the business carries on exactly as
- * it does now, and nothing silently vanishes while we wait on Meta approval.
+ * Nothing is stubbed here — `lib/whatsapp-meta.ts` is the finished integration.
+ * With WHATSAPP_TOKEN and WHATSAPP_PHONE_NUMBER_ID set, queued messages send
+ * themselves on the next flush. Without them this returns null and the outbox
+ * keeps queueing, which is the same code path minus the network call, so the
+ * business carries on sending by hand and nothing is lost in the meantime.
  */
 function getDriver(): Driver | null {
-  // When a provider is chosen, this becomes something like:
-  //   if (process.env.WHATSAPP_PROVIDER === "aisensy") return aisensyDriver();
-  // and the only other change is adding the env var.
-  return null;
+  const cfg = metaConfig();
+  if (!cfg) return null;
+  return {
+    name: "meta",
+    send: (to, templateKey, vars) => sendTemplate(cfg, to, templateKey, vars),
+  };
 }
 
 /** True when automated sending is live. The admin UI reads this to decide
@@ -174,18 +208,28 @@ export async function flush(limit = 25): Promise<{ sent: number; failed: number 
   const db = sbAdmin();
   const { data: rows } = await db
     .from("notifications")
-    .select("id, recipient, body, attempts")
+    .select("id, recipient, body, attempts, template_key, payload")
     .eq("status", "queued")
+    .eq("channel", "whatsapp")
     .order("created_at", { ascending: true })
     .limit(limit)
-    .returns<{ id: string; recipient: string; body: string; attempts: number }[]>();
+    .returns<
+      {
+        id: string;
+        recipient: string;
+        body: string;
+        attempts: number;
+        template_key: TemplateKey;
+        payload: Record<string, unknown>;
+      }[]
+    >();
 
   let sent = 0;
   let failed = 0;
 
   for (const row of rows ?? []) {
     try {
-      const res = await driver.send(row.recipient, row.body);
+      const res = await driver.send(row.recipient, row.template_key, row.payload);
       await db
         .from("notifications")
         .update({

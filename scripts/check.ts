@@ -24,6 +24,7 @@ import {
 } from "../lib/format";
 import { estimate } from "../lib/estimate";
 import { canCancel } from "../lib/booking-rules";
+import { distanceKm } from "../lib/geo-shared";
 import { fillTemplate, summariseItems, waLink } from "../lib/whatsapp";
 import type { BookingItem, BookingStatus } from "../lib/db-types";
 
@@ -229,6 +230,32 @@ it("a 10-digit number from the admin panel still reaches WhatsApp", () => {
   assert.equal(normalisePhone("+91 95153 21371"), "919515321371");
   assert.equal(normalisePhone("919515321371"), "919515321371");
   assert.equal(normalisePhone("09195153 21371"), "919515321371");
+});
+
+console.log(`\nservice area`);
+
+it("distance is right between two known Hyderabad points", () => {
+  // The bug this guards: a radius check that treats degrees as kilometres, or
+  // swaps lat and lng, still returns a plausible number — and the only symptom
+  // is real customers being told "we don't collect there".
+  const cityCentre = { lat: 17.385, lng: 78.4867 };
+  const gachibowli = { lat: 17.4435, lng: 78.3772 };
+
+  const km = distanceKm(cityCentre, gachibowli);
+  assert.ok(km > 11 && km < 15, `expected ~13 km, got ${km}`);
+
+  assert.equal(distanceKm(cityCentre, cityCentre), 0);
+  // Symmetric, or the answer depends on argument order.
+  assert.equal(
+    Math.round(distanceKm(gachibowli, cityCentre) * 1000),
+    Math.round(km * 1000),
+  );
+});
+
+it("a 15 km radius covers the suburbs but not the next city", () => {
+  const depot = { lat: 17.385, lng: 78.4867 };
+  assert.ok(distanceKm(depot, { lat: 17.4435, lng: 78.3772 }) <= 15, "Gachibowli in");
+  assert.ok(distanceKm(depot, { lat: 16.5062, lng: 80.648 }) > 15, "Vijayawada out");
 });
 
 console.log(`\n${checks} checks passed.\n`);

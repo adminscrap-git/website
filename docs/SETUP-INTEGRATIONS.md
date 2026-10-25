@@ -1,203 +1,252 @@
 # Integration setup
 
-Everything here is a thing only you can do — it needs your company details,
-your card, and your logins. Work top to bottom; each section says what you get
-back and where to put it.
+Everything in here is a thing only you can do — it needs your company details,
+your card, and your logins. **All the code is already written and deployed.**
+Each section below ends with values to paste in; nothing else changes.
 
-Values you collect go in **two places**:
+Values go in **two places**:
 
-1. `.env.local` in the project folder (for local work)
-2. Vercel → your project → **Settings** → **Environment Variables** (for the
-   live site), then **Deployments** → **⋯** on the newest → **Redeploy**
+1. `.env.local` in the project folder (local work)
+2. Vercel → your project → **Settings** → **Environment Variables** (live
+   site), then **Deployments** → **⋯** on the newest → **Redeploy**
 
 ---
 
-## 0. Apply the database migration (do this first)
+## 0. Run the database migration — do this first
 
-Nothing in the new field-ops feature works until this runs. It creates the
-agent accounts table, the photo table and the message outbox.
+Nothing in the field-ops feature works until this runs. It creates the agent
+accounts table, the photo table, the message outbox, and the service-area
+setting.
 
 1. Go to **https://supabase.com/dashboard**
 2. Click your project (`tuclehdnpysbiojplbsg`)
 3. Left sidebar → **SQL Editor**
-4. Click **+ New query** (top left of the editor panel)
-5. Open `supabase/migrations/0007_field_ops.sql` from this repo, copy the whole
-   file, paste it into the editor
+4. Click **+ New query**
+5. Open `supabase/migrations/0007_field_ops.sql`, copy the whole file, paste it
 6. Click **Run** (bottom right, or Ctrl+Enter)
 
-You should see `Success. No rows returned`.
+Expect `Success. No rows returned`.
 
-> If it errors with **"unsafe use of new value of enum type"**, run just the
-> four `alter type ...` lines at the top on their own first, click **Run**,
-> then run the rest of the file.
+> If it errors with **"unsafe use of new value of enum type"**, run only the
+> four `alter type ...` lines at the top first, click **Run**, then run the
+> rest of the file.
 
-**Check it worked:** sidebar → **Table Editor**. You should now see
-`agent_profiles`, `booking_photos` and `notifications` in the table list.
+**Verify:** sidebar → **Table Editor**. You should now see `agent_profiles`,
+`booking_photos` and `notifications`.
 
 ---
 
 ## 1. Google Maps
 
-Used for: the address picker on the booking form, the agent's "Navigate"
-button, and the service-area radius on the admin map.
+Powers address autocomplete on the booking form, the agent's Navigate button,
+and the service-area circle in the admin.
 
 ### 1a. Create the project
 
-1. Go to **https://console.cloud.google.com/**
-2. Sign in with the Google account that should own the billing
-3. Top bar, next to the "Google Cloud" logo, click the **project dropdown**
-   (it says "Select a project")
-4. In the dialog, click **NEW PROJECT** (top right)
-5. **Project name:** `ScrapSquad` → click **CREATE**
-6. Wait for the notification, then click **SELECT PROJECT**
+1. **https://console.cloud.google.com/**
+2. Sign in with the account that should own the billing
+3. Top bar, next to the "Google Cloud" logo → click the **project dropdown**
+4. **NEW PROJECT** (top right of the dialog)
+5. Name it `ScrapSquad` → **CREATE** → **SELECT PROJECT**
 
 ### 1b. Turn on billing
 
-Google requires a card even though the free tier is generous. You get **$200
-of free usage every month**, which is far more than this site will use.
+Google requires a card even though the free tier covers this easily — **$200
+of free usage every month**.
 
-1. Left sidebar (the ☰ hamburger, top left) → **Billing**
-2. Click **LINK A BILLING ACCOUNT** → **CREATE BILLING ACCOUNT**
-3. Enter country **India**, accept terms, click **CONTINUE**
-4. Enter your card details → **SUBMIT AND ENABLE BILLING**
+1. ☰ menu (top left) → **Billing**
+2. **LINK A BILLING ACCOUNT** → **CREATE BILLING ACCOUNT**
+3. Country **India**, accept terms → **CONTINUE**
+4. Card details → **SUBMIT AND ENABLE BILLING**
 
-### 1c. Enable the three APIs
+### 1c. Enable three APIs
 
-For each of these, search its name in the top search bar, open it, and click
-the blue **ENABLE** button:
+Paste each name into the search bar at the very top of the console, open the
+result, click the blue **ENABLE**:
 
-| API | What it does here |
+| API | Used for |
 |---|---|
-| **Maps JavaScript API** | Draws the map on the admin service-area page |
+| **Maps JavaScript API** | The admin service-area map |
 | **Places API (New)** | Address autocomplete on the booking form |
-| **Geocoding API** | Turns an address into coordinates to test the radius |
-
-Fastest route for each: paste the API name into the search bar at the very top
-of the console, click the result under *Marketplace*, click **ENABLE**.
+| **Geocoding API** | Turning a typed address into coordinates server-side |
 
 ### 1d. Create the key
 
-1. Left sidebar → **APIs & Services** → **Credentials**
-2. Click **+ CREATE CREDENTIALS** (top) → **API key**
-3. A box shows your key — click the **copy** icon. It looks like
-   `AIzaSy...`
-4. Click **EDIT API KEY** in that same box (or click the key's name in the list)
+1. ☰ → **APIs & Services** → **Credentials**
+2. **+ CREATE CREDENTIALS** → **API key**
+3. Copy the key (`AIzaSy...`)
+4. Click **EDIT API KEY**
 
-### 1e. Restrict the key — do not skip this
+### 1e. Restrict the key — do not skip
 
-An unrestricted Maps key found in your page source can be used by anyone and
-billed to you.
+An unrestricted Maps key is visible in your page source and billable by anyone
+who finds it.
 
-1. Under **Application restrictions**, choose **Websites**
-2. Click **ADD** and add each of these, one at a time:
+1. **Application restrictions** → **Websites**
+2. **ADD**, one at a time:
    - `https://website-ten-sepia-86.vercel.app/*`
    - `http://localhost:3000/*`
-   - your custom domain when you have one, as `https://yourdomain.com/*`
-3. Under **API restrictions**, choose **Restrict key**
-4. In the dropdown tick exactly: **Maps JavaScript API**, **Places API (New)**,
+   - your custom domain later, as `https://yourdomain.com/*`
+3. **API restrictions** → **Restrict key**
+4. Tick exactly: **Maps JavaScript API**, **Places API (New)**,
    **Geocoding API**
-5. Click **SAVE** (bottom)
+5. **SAVE**
 
-### 1f. Set a budget alert (recommended)
+### 1f. Budget alert (recommended)
 
-1. Left sidebar → **Billing** → **Budgets & alerts**
-2. **CREATE BUDGET** → name it `Maps`, **NEXT**
-3. Set **Target amount** to something like `500` INR → **NEXT** → **FINISH**
+☰ → **Billing** → **Budgets & alerts** → **CREATE BUDGET** → name `Maps`,
+**NEXT** → target `500` INR → **NEXT** → **FINISH**.
 
-You will be emailed if usage ever approaches it.
-
-### 1g. Give me the key
-
-Add to `.env.local` and to Vercel:
+### 1g. Paste it in
 
 ```
-NEXT_PUBLIC_GOOGLE_MAPS_KEY=AIzaSy...your key...
+NEXT_PUBLIC_GOOGLE_MAPS_KEY=AIzaSy...
 ```
 
-It is `NEXT_PUBLIC_` because the browser has to load the map — that is normal
-and safe **only because of step 1e**. The website restriction is what stops
-anyone else using it.
+`NEXT_PUBLIC_` is correct — the browser loads the map. That is safe **only
+because of step 1e**.
+
+### 1h. Set your depot
+
+Once the key is live: **/admin** → **Service area** → drag the pin to your
+depot, drag the circle edge to set how far you collect → **Save service area**.
+
+Until you do, it defaults to a 15 km circle around Hyderabad city centre.
 
 ---
 
-## 2. WhatsApp
+## 2. WhatsApp — Meta Cloud API
 
-**Nothing is blocked on this.** Messages are already written and queued
-against each booking, and the office can send each one in a single tap from
-the booking page. This section is for when you want them to send themselves.
+**The integration is finished.** `lib/whatsapp-meta.ts` sends approved
+templates, `/api/whatsapp/webhook` records delivery receipts, and Vercel Cron
+retries anything that fails every 5 minutes. It all switches on the moment the
+credentials below exist. Until then every message is still written and queued
+against its booking with a one-tap send link.
 
-### What Meta requires, whichever route you pick
+### 2a. Business portfolio
 
-You cannot send automated WhatsApp messages from a normal number. Every route
-below needs the same three things, and the waiting is Meta's, not ours:
+1. **https://business.facebook.com/** → **Create account**
+2. Enter business name, your name, business email → **Submit**
 
-1. A **Meta Business account** that passes business verification — they ask for
-   a registration certificate, a utility bill or a bank statement in the
-   business's name
-2. A **phone number** that is **not currently registered on WhatsApp**
-   (if `95153 21371` is on WhatsApp today, you must either delete that WhatsApp
-   account first or use a different number)
-3. **Pre-approved templates.** Meta approves the exact wording of any message
-   you send first. Our six are in `lib/notify.ts` under `DEFAULT_TEMPLATES` —
-   they will need submitting as-is.
+### 2b. Create the app
 
-### Option A — an Indian BSP (fastest)
+1. **https://developers.facebook.com/apps/**
+2. **Create App** (green, top right)
+3. Use case → choose **Other** → **Next**
+4. App type → **Business** → **Next**
+5. App name `ScrapSquad`, contact email, link the portfolio from 2a →
+   **Create app**
 
-AiSensy, Interakt, Wati or Gupshup. Around ₹999–2,500/month. They walk you
-through verification, submit the templates for you, and give you an API key.
-Usually live in 1–3 days.
+### 2c. Add WhatsApp
 
-Using **AiSensy** as the example:
+1. On the app dashboard, scroll to **WhatsApp** → **Set up**
+2. Left sidebar → **WhatsApp** → **API Setup**
+3. Under **From**, click **Add phone number**
+4. Enter your business number → verify by SMS/call
 
-1. Go to **https://www.aisensy.com/** → **Sign Up** (top right)
-2. Finish signup, then on the dashboard click **Connect WhatsApp Business**
-3. Follow their embedded Meta signup — it asks for your business details and
-   the phone number from point 2 above
-4. Once approved, left sidebar → **Manage** → **API Key** → **Generate**
-5. Left sidebar → **Templates** → create one per entry in `DEFAULT_TEMPLATES`
+> **Important:** the number must **not** currently be registered on WhatsApp.
+> If `95153 21371` is on WhatsApp today, either delete that WhatsApp account
+> first (WhatsApp app → Settings → Account → Delete my account) or use a
+> different number for sending.
 
-Then send me:
-- the API key
-- your sender phone number
-- the **exact template names** you registered
+Copy the **Phone number ID** shown on this page.
 
-### Option B — Meta Cloud API direct
+### 2d. Business verification
 
-No monthly fee, roughly ₹0.11–0.80 per conversation, but you do all the
-paperwork and wait on approvals yourself.
+This is the slow part — allow **1–3 weeks**. Start it now, continue the rest
+meanwhile.
 
-1. **https://business.facebook.com/** → create a Business portfolio
-2. **https://developers.facebook.com/** → **My Apps** → **Create App** →
-   choose **Business** → name it `ScrapSquad`
-3. On the app dashboard find **WhatsApp** → **Set up**
-4. **API Setup** → add your phone number → verify by OTP
-5. **https://business.facebook.com/settings/security-centre** → **Start
-   Verification** → upload your business documents *(this is the slow part —
-   allow 1–3 weeks)*
-6. App dashboard → **WhatsApp** → **Message Templates** → **Create template**,
-   once per entry in `DEFAULT_TEMPLATES`
-7. **System Users** → create one → **Generate token** → tick
-   `whatsapp_business_messaging` → copy the **permanent** token
+1. **https://business.facebook.com/settings/security-centre**
+2. **Start Verification**
+3. Upload a business registration certificate, utility bill or bank statement
+   in the business's exact name
 
-Then send me:
-- the permanent access token
-- the **Phone Number ID** (shown on the API Setup page)
-- the **WhatsApp Business Account ID**
+### 2e. Register the seven templates
 
-### When you have the credentials
+Left sidebar → **WhatsApp** → **Message Templates** → **Create template**.
 
-Wiring them up is one function. `getDriver()` in `lib/notify.ts` returns `null`
-today; it will return the provider's send call instead, and everything already
-queued sends itself. No other file changes.
+For each one: **Category** = `Utility`, **Language** = `English`, name it
+exactly as in the table, and paste the body.
 
----
+The bodies are in `lib/notify.ts` under `DEFAULT_TEMPLATES` — but Meta uses
+numbered placeholders, so use **these** versions. The number order is what
+`lib/whatsapp-meta.ts` sends; changing it silently sends the wrong values.
 
-## 3. What I still need from you
-
-| Thing | Why |
+| Template name | Placeholders in order |
 |---|---|
-| Migration 0007 run (section 0) | Nothing in field ops works until then |
-| `NEXT_PUBLIC_GOOGLE_MAPS_KEY` | Address picker, agent navigation, radius map |
-| Real contact email | `hello@scrapsquad.example` is live and cannot receive mail |
-| Depot address or coordinates | The centre point the service radius measures from |
-| WhatsApp credentials | Only when you want automatic sending |
+| `booking_confirmed_customer` | name, code, date, slot, items, track-link |
+| `booking_new_admin` | code, name, phone, date, slot, address, items, estimate |
+| `agent_assigned_customer` | name, agent name, code, date, slot, agent phone, track-link |
+| `agent_en_route_customer` | name, agent name, code, track-link |
+| `agent_at_gate_customer` | name, agent name, code, agent phone |
+| `pickup_complete_customer` | name, code, weight, amount, method, track-link |
+| `job_assigned_agent` | code, date, slot, name, phone, address |
+
+Example body for `agent_at_gate_customer`:
+
+```
+Hi {{1}}, {{2}} from ScrapSquad is at your gate for pickup {{3}}.
+
+Please approve entry with your security desk, or call {{4}}. We'll wait.
+```
+
+Meta asks for a sample value per placeholder — any realistic value is fine.
+
+### 2f. Permanent access token
+
+The token on the API Setup page expires in 24 hours. You need a permanent one.
+
+1. **https://business.facebook.com/settings/system-users**
+2. **Add** → name `scrapsquad-api`, role **Admin** → **Create**
+3. **Assign assets** → **Apps** → pick your app → enable **Full control** →
+   **Save changes**
+4. **Generate new token** → pick your app → **Token expiration: Never**
+5. Tick **whatsapp_business_messaging** and **whatsapp_business_management**
+6. **Generate token** → **copy it now**, it is shown only once
+
+### 2g. Webhook
+
+1. App dashboard → **WhatsApp** → **Configuration**
+2. **Edit** next to Callback URL
+3. **Callback URL:**
+   `https://website-ten-sepia-86.vercel.app/api/whatsapp/webhook`
+4. **Verify token:** invent any random string, e.g. `squad-hook-9f2a7c`, and
+   keep it — it goes in `WHATSAPP_VERIFY_TOKEN`
+5. **Verify and save**
+6. Under **Webhook fields**, click **Manage** → tick **messages** → **Done**
+
+> It must say "verified". If it fails, the env vars are not deployed yet —
+> set them and redeploy first, then verify.
+
+### 2h. App secret
+
+App dashboard → **App settings** → **Basic** → **App secret** → **Show** →
+copy.
+
+### 2i. Paste it all in
+
+```
+WHATSAPP_TOKEN=EAA...            (2f)
+WHATSAPP_PHONE_NUMBER_ID=1234... (2c)
+WHATSAPP_TEMPLATE_LANG=en
+WHATSAPP_VERIFY_TOKEN=squad-hook-9f2a7c   (whatever you invented in 2g)
+WHATSAPP_APP_SECRET=abc123...    (2h)
+CRON_SECRET=any-long-random-string
+```
+
+Redeploy. Messages start sending themselves; the admin booking page shows
+`sent` instead of `queued`.
+
+---
+
+## 3. Checklist
+
+| | Needed for | Blocking? |
+|---|---|---|
+| Migration 0007 (section 0) | All field ops | **Yes — nothing works without it** |
+| `NEXT_PUBLIC_GOOGLE_MAPS_KEY` | Autocomplete, radius map | No — falls back to pincodes |
+| Depot pin set (1h) | Accurate service area | No — defaults to Hyderabad 15 km |
+| WhatsApp credentials (2) | Automatic sending | No — queues for one-tap manual send |
+| `CRON_SECRET` | Retry sweep | Only with WhatsApp |
+| Real contact email | `hello@scrapsquad.example` cannot receive mail | No |
+| First agent account | Testing the agent app | After migration |
