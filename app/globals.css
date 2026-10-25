@@ -55,21 +55,15 @@
 
 /* Sticky offsets key off this. Defined once so the mobile sheet and the
    rate-card jump-nav can never drift out of alignment with the real header.
-   Two rows now: the mark and menu on top, the location bar under them. Get
-   this wrong and the jump-nav scrolls up behind the location bar instead of
-   parking below it. */
+   The mark and the location sit on two lines inside the bar, which makes it
+   the same height at every width — measured, not guessed. Get this wrong and
+   the jump-nav scrolls up behind the header instead of parking below it. */
 :root {
-  --header-h: 117px;
+  --header-h: 108px;
   /* Tab-bar cap height + whatever the device reserves below it. The side rail
      and the footer spacer both key off this. */
   --bottombar-h: calc(71px + max(0.75rem, env(safe-area-inset-bottom)));
 }
-@media (min-width: 640px) {
-  :root {
-    --header-h: 125px;
-  }
-}
-
 /* ── base ───────────────────────────────────────────────────── */
 html {
   background: var(--color-paper);

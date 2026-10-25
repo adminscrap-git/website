@@ -44,16 +44,28 @@ export function Header() {
         aria-hidden
       />
 
-      <div className="mx-auto flex max-w-[1400px] items-center gap-3 px-5 py-4 sm:px-8">
-        {/* No pill behind it any more: the mark carries its own disc and ring,
-            and boxing a badge inside another badge just muddied both. */}
-        <Link
-          href="/"
-          className="shrink-0 text-cobalt transition-transform duration-150 hover:-rotate-2"
-          aria-label="ScrapSquad — home"
-        >
-          <Wordmark className="text-[15px]" />
-        </Link>
+      <div className="mx-auto flex max-w-[1400px] items-center gap-3 px-5 py-3 sm:px-8">
+        {/* Mark on top, location directly under it. They had shared one line,
+            which on a 390px phone meant a long area name and the menu fought
+            for the same space and the name lost — "Set lo…". Stacked, the
+            name gets the width it needs without pushing anything off. */}
+        <div className="flex min-w-0 flex-1 flex-col items-start gap-0.5">
+          {/* No pill behind it any more: the mark carries its own disc and
+              ring, and boxing a badge inside another badge muddied both. */}
+          <Link
+            href="/"
+            className="shrink-0 text-cobalt transition-transform duration-150 hover:-rotate-2"
+            aria-label="ScrapSquad — home"
+          >
+            <Wordmark className="text-[15px]" />
+          </Link>
+
+          {/* The column takes the free width rather than hugging the
+              wordmark, or the chip is clamped to the width of "ScrapSquad"
+              and an area name truncates to "Set locat…" with empty space
+              beside it. */}
+          <LocationChip className="-ml-1 py-1" />
+        </div>
 
         {/* The inline nav that used to live here is gone: the bottom bar now
             carries those links at every width, and showing both put the same
@@ -105,15 +117,6 @@ export function Header() {
         </div>
       </div>
 
-      {/* Its own row under the mark rather than beside it. Sharing the top line
-          meant a long area name and the menu competed for the same 390px, and
-          the name lost — "Set lo…". Full width also makes it a real target:
-          picking where the van comes is the first decision on the page. */}
-      <div className="border-t border-paper-3/70">
-        <div className="mx-auto max-w-[1400px] px-2 sm:px-5">
-          <LocationChip className="w-full rounded-none px-3 py-2.5" />
-        </div>
-      </div>
 
       {/* The full menu, now at every width. Full-bleed overlay, but the links
           are capped to a column — 4xl display type running the width of a
