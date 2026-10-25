@@ -59,19 +59,36 @@ export async function proxy(request: NextRequest) {
   const loginPath = `${area}/login`;
   const isLogin = pathname === loginPath;
 
-  if (!user && !isLogin) {
+  /**
+   * Any response we return INSTEAD of `response` has to carry the cookies
+   * getUser() just rotated.
+   *
+   * This is what caused the redirect loop. Supabase refresh tokens are
+   * single-use: getUser() spends the old one and queues the new pair onto
+   * `response`. A bare NextResponse.redirect() is a different object, so those
+   * cookies were dropped on the floor and the browser kept replaying a token
+   * that had already been spent. Inside the reuse window it still worked and
+   * the request was let through; past it, it didn't and the request bounced to
+   * the login page — which saw a working session again and sent it back to
+   * /admin. Back and forth until Chrome gave up with ERR_TOO_MANY_REDIRECTS.
+   */
+  const redirectTo = (to: string, search = "") => {
     const url = request.nextUrl.clone();
-    url.pathname = loginPath;
-    url.search = pathname === area ? "" : `?next=${encodeURIComponent(pathname)}`;
-    return NextResponse.redirect(url);
+    url.pathname = to;
+    url.search = search;
+    const out = NextResponse.redirect(url);
+    for (const cookie of response.cookies.getAll()) out.cookies.set(cookie);
+    return out;
+  };
+
+  if (!user && !isLogin) {
+    return redirectTo(
+      loginPath,
+      pathname === area ? "" : `?next=${encodeURIComponent(pathname)}`,
+    );
   }
 
-  if (user && isLogin) {
-    const url = request.nextUrl.clone();
-    url.pathname = area;
-    url.search = "";
-    return NextResponse.redirect(url);
-  }
+  if (user && isLogin) return redirectTo(area);
 
   return response;
 }
