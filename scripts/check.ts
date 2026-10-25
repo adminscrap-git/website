@@ -14,9 +14,12 @@ import {
   formatDate,
   formatDateLong,
   formatSlot,
+  formatSlotFull,
+  formatClock,
   isValidPhone,
   isValidPincode,
   normalisePhone,
+  formatPhone,
   range,
   rupees,
   slotStartsAt,
@@ -85,6 +88,27 @@ it("slot windows format as 12-hour times", () => {
   );
 });
 
+it("a slot whose label is already its time is not printed twice", () => {
+  // The bug this guards: the 45-minute slots are labelled "9:00 - 9:45 AM", so
+  // every "label, formatted" line read "9:00 - 9:45 AM, 9:00 AM – 9:45 AM" —
+  // on the customer's own booking page.
+  assert.equal(
+    formatSlotFull({ label: "9:00 - 9:45 AM", start_time: "09:00:00", end_time: "09:45:00" }),
+    "9:00 - 9:45 AM",
+  );
+  // A named window still gets its clock line.
+  assert.equal(
+    formatSlotFull({ label: "Morning", start_time: "09:00:00", end_time: "11:00:00" }),
+    "Morning · 9:00 AM – 11:00 AM",
+  );
+});
+
+it("a stored instant reads as IST, not as the server's clock", () => {
+  // The bug this guards: a Vercel box runs in UTC, so "approved at 2:14 PM"
+  // would reach an agent in Hyderabad reading 8:44 AM.
+  assert.match(formatClock("2026-09-05T08:44:00.000Z"), /^2:14\s?[ap]m$/i);
+});
+
 console.log("\nmoney");
 
 it("prices format in the Indian numbering system", () => {
@@ -135,6 +159,15 @@ it("pincodes reject a leading zero", () => {
   assert.ok(isValidPincode("110024"));
   assert.ok(!isValidPincode("011002"));
   assert.ok(!isValidPincode("11002"));
+});
+
+it("a stored number prints as a person reads it", () => {
+  // Numbers are stored in wa.me form so links work; printing that form on a
+  // page a customer reads gives them "919000000001" to dial.
+  assert.equal(formatPhone("919000000001"), "+91 90000 00001");
+  assert.equal(formatPhone("9000000001"), "+91 90000 00001");
+  // Anything that isn't an Indian mobile is left exactly as stored.
+  assert.equal(formatPhone("1800 123 4567"), "1800 123 4567");
 });
 
 console.log("\ncancellation window");
@@ -191,10 +224,10 @@ console.log("\nwhatsapp");
 it("templates fill known placeholders and blank unknown ones", () => {
   assert.equal(
     fillTemplate("Booking {{code}} on {{date}}. {{nope}}", {
-      code: "MNT-01001",
+      code: "SQD-01001",
       date: "5 Sep",
     }),
-    "Booking MNT-01001 on 5 Sep. ",
+    "Booking SQD-01001 on 5 Sep. ",
   );
 });
 
@@ -211,9 +244,9 @@ it("item summaries read differently for weight and count", () => {
 });
 
 it("wa.me links are encoded and length-capped", () => {
-  const link = waLink("98765 43210", "Hi MINT — booking MNT-01001");
+  const link = waLink("98765 43210", "Hi ScrapSquad — booking SQD-01001");
   assert.ok(link.startsWith("https://wa.me/919876543210?text="));
-  assert.ok(link.includes("MNT-01001"));
+  assert.ok(link.includes("SQD-01001"));
   assert.ok(!link.includes(" "), "spaces must be percent-encoded");
 
   const long = waLink("9876543210", "x".repeat(5000));

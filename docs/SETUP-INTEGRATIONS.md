@@ -12,11 +12,20 @@ Values go in **two places**:
 
 ---
 
-## 0. Run the database migration — do this first
+## 0. Run the database migrations — do this first
 
-Nothing in the field-ops feature works until this runs. It creates the agent
-accounts table, the photo table, the message outbox, and the service-area
-setting.
+**0007 is done.** 0008 is a three-line follow-up: it changes new booking codes
+from `MNT-` to `SQD-`, the last place the old name was still showing. Codes
+already issued keep working exactly as they are.
+
+Same steps as before — SQL Editor → **+ New query** → paste
+`supabase/migrations/0008_booking_code_prefix.sql` → **Run**.
+
+<details>
+<summary>What 0007 did, for reference</summary>
+
+It created the agent accounts table, the photo table, the message outbox, and
+the service-area setting.
 
 1. Go to **https://supabase.com/dashboard**
 2. Click your project (`tuclehdnpysbiojplbsg`)
@@ -33,6 +42,8 @@ Expect `Success. No rows returned`.
 
 **Verify:** sidebar → **Table Editor**. You should now see `agent_profiles`,
 `booking_photos` and `notifications`.
+
+</details>
 
 ---
 
@@ -243,7 +254,8 @@ Redeploy. Messages start sending themselves; the admin booking page shows
 
 | | Needed for | Blocking? |
 |---|---|---|
-| Migration 0007 (section 0) | All field ops | **Yes — nothing works without it** |
+| Migration 0007 (section 0) | All field ops | Done |
+| Migration 0008 (section 0) | Booking codes reading `SQD-` | No — old codes still work |
 | `NEXT_PUBLIC_GOOGLE_MAPS_KEY` | Autocomplete, radius map | No — falls back to pincodes |
 | Depot pin set (1h) | Accurate service area | No — defaults to Hyderabad 15 km |
 | WhatsApp credentials (2) | Automatic sending | No — queues for one-tap manual send |

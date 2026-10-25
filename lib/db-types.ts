@@ -134,6 +134,8 @@ export type BookingEvent = {
 export type BookingFull = Booking & {
   slot: TimeSlot | null;
   booking_items: BookingItem[];
+  /** Only present where the query embeds it — see SELECT_FULL in manage.ts. */
+  agent?: Pick<AgentProfile, "full_name" | "phone"> | null;
 };
 
 export type AdminProfile = {

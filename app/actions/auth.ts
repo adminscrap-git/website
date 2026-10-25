@@ -16,13 +16,19 @@ export async function signIn(_prev: FormState, fd: FormData): Promise<FormState>
   const password = String(fd.get("password") ?? "");
   const next = String(fd.get("next") ?? "/admin");
 
-  if (!email || !password) return { error: "Enter your email and password." };
+  // Every early return carries the email back, or the form clears it and the
+  // next submit is swallowed by the browser's own required check.
+  const keep = { email };
+
+  if (!email || !password)
+    return { error: "Enter your email and password.", values: keep };
 
   const sb = await sbSession();
   const { data, error } = await sb.auth.signInWithPassword({ email, password });
 
   // Deliberately vague: don't confirm which half was wrong.
-  if (error || !data.user) return { error: "That email and password don't match." };
+  if (error || !data.user)
+    return { error: "That email and password don't match.", values: keep };
 
   // Authenticating isn't authorisation. Without an admin_profiles row this
   // account gets nothing, so sign it straight back out and say so.
@@ -34,7 +40,7 @@ export async function signIn(_prev: FormState, fd: FormData): Promise<FormState>
 
   if (!profile) {
     await sb.auth.signOut();
-    return { error: "That account doesn't have admin access." };
+    return { error: "That account doesn't have admin access.", values: keep };
   }
 
   redirect(next.startsWith("/admin") ? next : "/admin");

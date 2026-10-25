@@ -15,7 +15,20 @@ import type { BookingStatus, Unit } from "@/lib/db-types";
  * and a staff account must not be able to POST its way into the rate card.
  */
 
-export type FormState = { error?: string; ok?: string };
+/**
+ * What an action hands back to its form.
+ *
+ * `values` exists because React resets a `<form action={…}>` once the action
+ * returns — so after a rejected sign in the email box is empty, the browser's
+ * own `required` check silently blocks the next submit, and the button looks
+ * dead. Echoing the typed values back as defaults is the fix. Never echo a
+ * password.
+ */
+export type FormState = {
+  error?: string;
+  ok?: string;
+  values?: Record<string, string>;
+};
 
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
 const num = (fd: FormData, k: string) => Number(fd.get(k) ?? 0);

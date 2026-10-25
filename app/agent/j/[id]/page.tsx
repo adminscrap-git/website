@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { requireAgent } from "@/lib/agent-auth";
 import { sbAdmin } from "@/lib/supabase/admin";
-import { formatDate, formatSlot, rupees, telHref } from "@/lib/format";
+import { formatClock, formatDate, formatSlot, rupees, telHref } from "@/lib/format";
 import { STATUS_LABEL, PHOTO_LABEL } from "@/lib/db-types";
 import type { BookingFull, BookingPhoto } from "@/lib/db-types";
 import { JobControls } from "@/components/agent/job-controls";
@@ -78,6 +78,24 @@ export default async function AgentJobPage({ params }: PageProps<"/agent/j/[id]"
           Navigate
         </a>
       </div>
+
+      {/* The other end of "I'm at the gate". Standing outside a barrier not
+          knowing whether anyone read the message is the whole problem this
+          solves, so it sits above the address, where the agent is looking. */}
+      {booking.status === "arrived" && (
+        <p
+          className={
+            booking.gate_approved_at
+              ? "readout mt-5 rounded-toy bg-cobalt px-4 py-3.5 text-center text-sm font-bold text-paper"
+              : "readout mt-5 rounded-toy bg-sun-soft px-4 py-3.5 text-center text-sm font-bold text-ink-2"
+          }
+        >
+          {booking.gate_approved_at
+            ? `Customer approved entry at ${formatClock(booking.gate_approved_at)}`
+            : "Waiting for the customer to clear you at the gate…"}
+        </p>
+      )}
+
 
       <section className="mt-5 rounded-toy bg-paper p-4">
         <h2 className="readout text-[11px] uppercase tracking-[0.14em] text-ink-3">

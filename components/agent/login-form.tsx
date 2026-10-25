@@ -22,6 +22,11 @@ export function AgentLoginForm({ next }: { next: string }) {
         <input
           name="email"
           type="email"
+          // Echoed back by the action: React empties an uncontrolled form once
+          // the action returns, and an empty required box makes the next tap
+          // on Sign in do nothing.
+          defaultValue={state.values?.email}
+          key={state.values?.email}
           autoComplete="username"
           inputMode="email"
           autoCapitalize="none"

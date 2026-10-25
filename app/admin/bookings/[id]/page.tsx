@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { getBookingById, getBookingEvents } from "@/lib/admin-queries";
 import { getSettings } from "@/lib/queries";
 import { buildStatusMessage, waLink } from "@/lib/whatsapp";
-import { formatDateLong, formatSlot, range } from "@/lib/format";
+import { formatDateLong, formatSlotFull, range } from "@/lib/format";
 import { STATUS_LABEL, UNIT_SHORT } from "@/lib/db-types";
 import { site } from "@/lib/site";
 import { Panel, StatusPill } from "@/components/admin/ui";
@@ -78,7 +78,7 @@ export default async function BookingDetail(props: PageProps<"/admin/bookings/[i
           <h1 className="display mt-1 text-4xl">{booking.name}</h1>
           <p className="mt-2 text-lg font-semibold text-ink-2">
             {formatDateLong(booking.pickup_date)}
-            {booking.slot && ` · ${booking.slot.label}, ${formatSlot(booking.slot)}`}
+            {booking.slot && ` · ${formatSlotFull(booking.slot)}`}
           </p>
         </div>
         <StatusPill status={booking.status} className="mt-2 text-xs" />

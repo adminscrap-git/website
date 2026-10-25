@@ -6,17 +6,19 @@ import { canCancel, CANCEL_MESSAGE } from "@/lib/booking-rules";
 import {
   addDays,
   formatDateLong,
-  formatSlot,
   range,
   rupees,
   telHref,
   todayIST,
+  formatPhone,
+  formatSlotFull,
 } from "@/lib/format";
 import { buildBookingMessage, waLink } from "@/lib/whatsapp";
 import { STATUS_FLOW, STATUS_LABEL, UNIT_SHORT } from "@/lib/db-types";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/cn";
 import { BookingManage } from "@/components/site/booking-manage";
+import { GateApproval } from "@/components/site/gate-approval";
 import { ButtonAnchor } from "@/components/ui/button";
 import { CopyButton } from "@/components/ui/copy-button";
 
@@ -105,7 +107,7 @@ export default async function BookingPage(props: PageProps<"/b/[token]">) {
               <br />
               <span className="text-cobalt">
                 {booking.slot
-                  ? `${booking.slot.label}, ${formatSlot(booking.slot)}`
+                  ? formatSlotFull(booking.slot)
                   : "Window to be confirmed"}
               </span>
             </>
@@ -156,6 +158,33 @@ export default async function BookingPage(props: PageProps<"/b/[token]">) {
             );
           })}
         </ol>
+      )}
+
+      {/* ── who's coming ───────────────────────────────── */}
+      {!cancelled && booking.agent && (
+        <section className="mt-10 rounded-toy bg-paper-2 px-6 py-5">
+          <h3 className="readout text-[11px] uppercase tracking-[0.16em] text-ink-2">
+            Your pickup agent
+          </h3>
+          <p className="mt-2 text-xl font-extrabold">{booking.agent.full_name}</p>
+          {booking.agent.phone && (
+            <a
+              href={telHref(booking.agent.phone)}
+              className="mt-1 inline-block text-base font-bold text-cobalt underline underline-offset-4"
+            >
+              Call {formatPhone(booking.agent.phone)}
+            </a>
+          )}
+        </section>
+      )}
+
+      {/* ── at the gate ────────────────────────────────── */}
+      {booking.status === "arrived" && (
+        <GateApproval
+          token={booking.token}
+          approvedAt={booking.gate_approved_at}
+          agentName={booking.agent?.full_name ?? null}
+        />
       )}
 
       {/* ── what we're collecting ────────────────────────────────── */}

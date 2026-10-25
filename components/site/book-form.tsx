@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { useCrate } from "@/lib/crate";
 import { estimate } from "@/lib/estimate";
-import { formatDate, formatSlot, range, rupees } from "@/lib/format";
+import { formatDate, formatSlot, formatSlotFull, range, rupees } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import type {
   AreaSettings,
@@ -28,12 +28,11 @@ const placesInput =
 
 /**
  * True when the slot's label already states its own time window, so the
- * formatted clock line underneath would be pure repetition. Compares digits
- * only, which survives "9:00 - 9:45 AM" vs "9:00 AM – 9:45 AM".
+ * formatted clock line underneath would be pure repetition. formatSlotFull
+ * owns that comparison — it collapses to the bare label in exactly that case.
  */
 function labelIsTime(slot: TimeSlot): boolean {
-  const digits = (v: string) => v.replace(/\D/g, "");
-  return digits(slot.label) === digits(formatSlot(slot));
+  return formatSlotFull(slot) === slot.label;
 }
 
 

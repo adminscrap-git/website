@@ -1,6 +1,6 @@
 import type { BookingFull, BookingItem } from "@/lib/db-types";
 import { STATUS_LABEL, UNIT_SHORT } from "@/lib/db-types";
-import { formatDateLong, formatSlot, normalisePhone } from "@/lib/format";
+import { formatDateLong, formatSlotFull, normalisePhone } from "@/lib/format";
 
 /**
  * WhatsApp via click-to-chat links. No SDK, no API keys, no Meta approval.
@@ -57,9 +57,7 @@ export function buildBookingMessage({
     code: booking.code,
     name: booking.name,
     date: formatDateLong(booking.pickup_date),
-    slot: booking.slot
-      ? `${booking.slot.label} (${formatSlot(booking.slot)})`
-      : "",
+    slot: booking.slot ? formatSlotFull(booking.slot) : "",
     items: summariseItems(booking.booking_items, booking.free_text_items),
     address: [booking.address_line, booking.landmark, booking.pincode]
       .filter(Boolean)

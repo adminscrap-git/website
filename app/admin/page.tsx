@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireAdmin, isSuper } from "@/lib/admin-auth";
 import { getDashboard } from "@/lib/admin-queries";
-import { formatDate, formatSlot, range } from "@/lib/format";
+import { formatDate, formatSlotFull, range } from "@/lib/format";
 import { STATUS_LABEL } from "@/lib/db-types";
 import { Panel, Stat, StatusPill } from "@/components/admin/ui";
 
@@ -96,7 +96,7 @@ export default async function AdminDashboard(props: PageProps<"/admin">) {
                       </p>
                       <p className="readout text-xs text-ink-2">
                         {formatDate(b.pickup_date)}
-                        {b.slot && ` · ${b.slot.label} ${formatSlot(b.slot)}`} ·{" "}
+                        {b.slot && ` · ${formatSlotFull(b.slot)}`} ·{" "}
                         {b.pincode}
                       </p>
                     </div>

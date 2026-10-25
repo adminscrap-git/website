@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/admin-auth";
 import { listBookings, type BookingFilters } from "@/lib/admin-queries";
-import { formatDate, formatSlot, range } from "@/lib/format";
+import { formatDate, formatSlotFull, range } from "@/lib/format";
 import type { BookingStatus } from "@/lib/db-types";
 import { StatusPill, adminInput } from "@/components/admin/ui";
 import { cn } from "@/lib/cn";
@@ -196,7 +196,7 @@ export default async function BookingsPage(props: PageProps<"/admin/bookings">) 
                   <td className="py-3 pr-4">
                     <p className="text-sm font-bold">{formatDate(b.pickup_date)}</p>
                     <p className="readout text-xs text-ink-3">
-                      {b.slot ? `${b.slot.label} · ${formatSlot(b.slot)}` : "—"}
+                      {b.slot ? formatSlotFull(b.slot) : "—"}
                     </p>
                   </td>
                   <td className="readout py-3 pr-4 text-sm">{b.pincode}</td>

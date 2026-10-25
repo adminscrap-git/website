@@ -15,8 +15,11 @@ import type { BookingFull, TimeSlot } from "@/lib/db-types";
  * — every lookup happens here, through the service role, on the server.
  */
 
+// The agent is embedded because the customer’s own page is where they look
+// after getting "Ramesh is on the way" — a page that doesn’t know who Ramesh
+// is sends them back to the message to find the number.
 const SELECT_FULL =
-  "*, slot:time_slots(*), booking_items(*)" as const;
+  "*, slot:time_slots(*), booking_items(*), agent:agent_profiles(full_name, phone)" as const;
 
 export async function getBookingByToken(
   token: string,
@@ -133,6 +136,51 @@ export async function rescheduleByToken(
     to_status: booking.status,
     actor: "customer",
     note: `Rescheduled to ${pickupDate} (${slot.label})`,
+  });
+
+  revalidatePath(`/b/${token}`);
+  return { ok: true };
+}
+
+/**
+ * "I've told security — let them in."
+ *
+ * The gate template asks the customer to clear the agent at the desk, and
+ * until now nothing came back: the agent stood outside with no way of knowing
+ * whether the message had even been read. This is the other half of it. One
+ * tap on the booking page the customer already has open, stamped once.
+ *
+ * Only meaningful while the agent is actually at the gate, so it is refused
+ * in every other state rather than quietly recording a time that means
+ * nothing. Idempotent — a second tap keeps the first timestamp, because the
+ * useful number is when they approved, not when they last pressed a button.
+ */
+export async function approveGateByToken(token: string): Promise<ActionResult> {
+  const booking = await getBookingByToken(token);
+  if (!booking) return { ok: false, error: "We couldn't find that booking." };
+
+  if (booking.status !== "arrived")
+    return { ok: false, error: "Nobody is at your gate right now." };
+
+  if (booking.gate_approved_at) {
+    revalidatePath(`/b/${token}`);
+    return { ok: true };
+  }
+
+  const db = sbAdmin();
+  const { error } = await db
+    .from("bookings")
+    .update({ gate_approved_at: new Date().toISOString() })
+    .eq("id", booking.id);
+
+  if (error) return { ok: false, error: "Couldn't send that through. Try again." };
+
+  await db.from("booking_events").insert({
+    booking_id: booking.id,
+    from_status: booking.status,
+    to_status: booking.status,
+    actor: "customer",
+    note: "Approved entry at the gate",
   });
 
   revalidatePath(`/b/${token}`);

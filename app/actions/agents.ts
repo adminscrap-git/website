@@ -21,7 +21,9 @@ import type { AgentProfile, BookingFull } from "@/lib/db-types";
  * one.
  */
 
-export type FormState = { error?: string; ok?: string };
+/** See the note on FormState in ./admin — same shape, same `values` echo. */
+import type { FormState } from "./admin";
+export type { FormState };
 
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
 

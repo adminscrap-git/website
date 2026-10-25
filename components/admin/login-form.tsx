@@ -16,6 +16,11 @@ export function LoginForm({ next }: { next: string }) {
         <input
           name="email"
           type="email"
+          // Echoed back by the action — see the note on FormState. Without it
+          // a mistyped password locks you out of your own back office until
+          // you think to reload the page.
+          defaultValue={state.values?.email}
+          key={state.values?.email}
           autoComplete="username"
           required
           className={adminInput}

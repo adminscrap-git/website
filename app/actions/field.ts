@@ -19,7 +19,9 @@ import type { Booking, BookingFull, BookingStatus, PhotoKind } from "@/lib/db-ty
  * someone else's pickup by editing an id.
  */
 
-export type FormState = { error?: string; ok?: string };
+/** See the note on FormState in ./admin — same shape, same `values` echo. */
+import type { FormState } from "./admin";
+export type { FormState };
 
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
 
@@ -262,12 +264,18 @@ export async function agentSignIn(
   const password = String(fd.get("password") ?? "");
   const next = str(fd, "next") || "/agent";
 
-  if (!email || !password) return { error: "Enter your email and password." };
+  // See FormState: without the echo the email box empties and the second
+  // tap on Sign in does nothing at all.
+  const keep = { email };
+
+  if (!email || !password)
+    return { error: "Enter your email and password.", values: keep };
 
   const sb = await sbSession();
   const { data, error } = await sb.auth.signInWithPassword({ email, password });
   // Deliberately vague: don't confirm which half was wrong.
-  if (error || !data.user) return { error: "That email and password don't match." };
+  if (error || !data.user)
+    return { error: "That email and password don't match.", values: keep };
 
   const { data: profile } = await sbAdmin()
     .from("agent_profiles")
@@ -277,11 +285,11 @@ export async function agentSignIn(
 
   if (!profile) {
     await sb.auth.signOut();
-    return { error: "That account isn't set up as a pickup agent." };
+    return { error: "That account isn't set up as a pickup agent.", values: keep };
   }
   if (!profile.is_active) {
     await sb.auth.signOut();
-    return { error: "This account has been deactivated. Call the office." };
+    return { error: "This account has been deactivated. Call the office.", values: keep };
   }
 
   redirect(next.startsWith("/agent") ? next : "/agent");

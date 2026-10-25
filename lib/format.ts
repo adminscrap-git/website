@@ -81,14 +81,39 @@ export function formatTime(t: string): string {
   return `${h12}:${min} ${suffix}`;
 }
 
+/**
+ * A stored instant as a clock time in IST — "2:14 PM".
+ *
+ * Pinned to Asia/Kolkata rather than the viewer's zone: this renders on the
+ * server, and a Vercel box in UTC would otherwise tell an agent in Hyderabad
+ * that the customer approved entry five and a half hours ago.
+ */
+export function formatClock(iso: string): string {
+  return new Date(iso).toLocaleTimeString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
 /** "9:00 AM – 11:00 AM" */
 export function formatSlot(slot: Pick<TimeSlot, "start_time" | "end_time">): string {
   return `${formatTime(slot.start_time)} – ${formatTime(slot.end_time)}`;
 }
 
-/** "Morning · 9:00 AM – 11:00 AM" */
-export function formatSlotFull(slot: TimeSlot): string {
-  return `${slot.label} · ${formatSlot(slot)}`;
+/**
+ * The slot, written out once.
+ *
+ * "Morning · 9:00 AM – 11:00 AM", but just "9:00 - 9:45 AM" when the label is
+ * already the window — since the 45-minute slots landed, every label states
+ * its own times and the clock line beside it was pure repetition. Compares
+ * digits only, so "9:00 - 9:45 AM" matches "9:00 AM – 9:45 AM".
+ */
+export function formatSlotFull(slot: Pick<TimeSlot, "label" | "start_time" | "end_time">): string {
+  const digits = (v: string) => v.replace(/\D/g, "");
+  const clock = formatSlot(slot);
+  return digits(slot.label) === digits(clock) ? slot.label : `${slot.label} · ${clock}`;
 }
 
 /**
@@ -120,6 +145,17 @@ export function isValidPhone(raw: string): boolean {
 
 export function isValidPincode(raw: string): boolean {
   return /^[1-9]\d{5}$/.test(raw.trim());
+}
+
+/**
+ * A stored number as a person would read it: "+91 90000 00001".
+ *
+ * Numbers are stored in wa.me form (919000000001) so links work, which is
+ * exactly the wrong thing to print on a page a customer reads.
+ */
+export function formatPhone(raw: string): string {
+  const d = normalisePhone(raw);
+  return /^91\d{10}$/.test(d) ? `+91 ${d.slice(2, 7)} ${d.slice(7)}` : raw;
 }
 
 /** `tel:` href from a human-formatted number — keeps digits and a leading +. */
