@@ -5,7 +5,7 @@ import { signOut } from "@/app/actions/auth";
 import { AdminNav } from "@/components/admin/nav";
 
 export const metadata: Metadata = {
-  title: { default: "Admin", template: "%s · MINT admin" },
+  title: { default: "Admin", template: "%s · ScrapSquad admin" },
   robots: { index: false, follow: false },
 };
 
@@ -21,7 +21,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       <aside className="border-b-2 border-paper-3 bg-paper-2 lg:w-60 lg:shrink-0 lg:border-b-0 lg:border-r-2">
         <div className="flex items-center justify-between gap-3 px-5 py-5 lg:block">
           <Link href="/admin" className="display text-2xl">
-            MINT<span className="text-coral">.</span>
+            ScrapSquad<span className="text-coral">.</span>
             <span className="ml-1.5 align-middle text-xs font-bold uppercase tracking-[0.14em] text-ink-3">
               admin
             </span>

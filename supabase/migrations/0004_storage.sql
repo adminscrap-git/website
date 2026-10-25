@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════
--- MINT — 0004_storage
+-- ScrapSquad — 0004_storage
 --
 -- One public bucket for category and item photos.
 --

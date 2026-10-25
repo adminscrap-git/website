@@ -70,7 +70,7 @@ export function FormMessage({ state }: { state: FormState }) {
 }
 
 const STATUS_STYLE: Record<BookingStatus, string> = {
-  pending: "bg-sun-soft text-[#8a5f00]",
+  pending: "bg-sun-soft text-[#8a5a12]",
   confirmed: "bg-cobalt-soft text-cobalt-deep",
   picked_up: "bg-cobalt text-paper",
   completed: "bg-ink text-paper",
@@ -140,7 +140,7 @@ export function Stat({
           "display mt-2 text-4xl",
           accent === "cobalt" && "text-cobalt",
           accent === "coral" && "text-coral-deep",
-          accent === "sun" && "text-[#8a5f00]",
+          accent === "sun" && "text-[#8a5a12]",
         )}
       >
         {value}

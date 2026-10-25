@@ -6,19 +6,19 @@
  * If these drift from globals.css, globals.css wins.
  */
 export const C = {
-  paper: "#ffffff",
-  paper2: "#f1f8f4",
-  paper3: "#dbeae1",
-  ink: "#0b0b0b",
-  ink2: "#4a5a52",
-  cobalt: "#047857",
-  cobaltDeep: "#065f46",
-  cobaltSoft: "#d1fae5",
-  coral: "#10b981",
-  coralDeep: "#047857",
-  coralSoft: "#d1fae5",
-  sun: "#ffc53d",
-  sunSoft: "#fff0cc",
+  paper: "#fdf6ec",
+  paper2: "#f6ebd8",
+  paper3: "#e7d9bf",
+  ink: "#14130f",
+  ink2: "#5a5343",
+  cobalt: "#145a32",
+  cobaltDeep: "#0d3d21",
+  cobaltSoft: "#dceae0",
+  coral: "#f5a623",
+  coralDeep: "#8a5a12",
+  coralSoft: "#fce9c6",
+  sun: "#e8b53d",
+  sunSoft: "#fbefd3",
   chrome: "#cfd3d8",
 } as const;
 

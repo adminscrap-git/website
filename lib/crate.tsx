@@ -17,6 +17,8 @@ import { useCallback, useMemo, useSyncExternalStore } from "react";
 
 export type CrateLine = { id: string; qty: number };
 
+// Keeps the pre-rebrand prefix on purpose: the key is invisible to users,
+// and renaming it would silently empty this for everyone who already has one.
 const KEY = "mint.crate.v1";
 const EMPTY: CrateLine[] = [];
 

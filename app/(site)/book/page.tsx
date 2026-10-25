@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Book a pickup",
   description:
-    "Book a free doorstep scrap pickup. Pick a date and a two-hour window — no signup, cancel any time.",
+    "Book a free doorstep scrap pickup. Pick a date and a 45-minute window — no signup, cancel any time.",
   robots: { index: false },
 };
 

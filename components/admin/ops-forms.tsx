@@ -88,7 +88,7 @@ export function SlotForm({ slot }: { slot?: TimeSlot }) {
           type="checkbox"
           name="is_active"
           defaultChecked={slot?.is_active ?? true}
-          className="h-5 w-5 accent-[#047857]"
+          className="h-5 w-5 accent-[#145a32]"
         />
         <span className="text-sm font-bold">Bookable</span>
       </label>
@@ -284,7 +284,7 @@ export function BookingRulesForm({ value }: { value: BookingSettings }) {
           type="checkbox"
           name="show_estimate"
           defaultChecked={value.show_estimate}
-          className="mt-0.5 h-5 w-5 accent-[#047857]"
+          className="mt-0.5 h-5 w-5 accent-[#145a32]"
         />
         <span className="text-sm font-bold">
           Show a running estimate to customers

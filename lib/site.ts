@@ -9,15 +9,15 @@ import { normalisePhone } from "@/lib/format";
  * fallbacks for when the DB is unreachable.
  */
 export const site = {
-  name: "MINT",
-  tagline: "Scrap in. Cash out.",
+  name: "ScrapSquad",
+  tagline: "Your scrap. Our squad.",
   description:
     "Book a free doorstep scrap pickup. Transparent rates, digital weighing, instant cash or UPI. E-waste, metal, paper, plastic, appliances and furniture.",
 
   // Digits only, with country code — this is what wa.me needs.
   whatsapp: normalisePhone(process.env.NEXT_PUBLIC_WHATSAPP || "919515321371"),
   phone: process.env.NEXT_PUBLIC_PHONE ?? "+91 95153 21371",
-  email: process.env.NEXT_PUBLIC_EMAIL ?? "hello@mint.example",
+  email: process.env.NEXT_PUBLIC_EMAIL ?? "hello@scrapsquad.example",
   city: process.env.NEXT_PUBLIC_CITY ?? "Hyderabad",
 
   url: resolveSiteUrl(),

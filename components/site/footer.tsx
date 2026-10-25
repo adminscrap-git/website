@@ -2,7 +2,7 @@ import Link from "next/link";
 import { promises } from "@/lib/site";
 import { telHref } from "@/lib/format";
 import type { BusinessSettings } from "@/lib/db-types";
-import { Wordmark } from "./header";
+import { Wordmark } from "@/components/site/logo";
 
 const COLUMNS = [
   {

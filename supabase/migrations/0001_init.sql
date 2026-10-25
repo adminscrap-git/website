@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════
--- MINT — scrap collection booking platform
+-- ScrapSquad — scrap collection booking platform
 -- 0001_init : schema, constraints, RLS
 --
 -- Paste into the Supabase SQL editor, or run with `supabase db push`.

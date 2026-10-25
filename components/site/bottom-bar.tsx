@@ -12,9 +12,9 @@ import { cn } from "@/lib/cn";
  * four links in two places is how a user stops trusting either. The header
  * keeps what the bar can't hold: the mark, the location, and the book CTA.
  *
- * The hamburger sheet stays as the full menu (it also reaches FAQ and Book).
- * Duplication there is the point — a tab bar that needs a menu to be complete
- * isn't a tab bar, but a menu that omits the tabs is a puzzle.
+ * Four tabs, not five. FAQ lives in the hamburger sheet, which stays as the
+ * full menu — a tab bar that needs a menu to be complete isn't a tab bar, but
+ * a menu that omits the tabs is a puzzle.
  */
 
 type Tab = {
@@ -37,7 +37,6 @@ const TABS: Tab[] = [
   { href: "/", label: "Home", icon: HomeIcon },
   { href: "/rates", label: "Rates", icon: RatesIcon },
   { href: "/book", label: "Book", icon: CrateIcon, crate: true },
-  { href: "/faq", label: "FAQ", icon: ShelfIcon },
   { href: "/contact", label: "Contact", icon: AccountIcon },
 ];
 
@@ -116,13 +115,6 @@ function HomeIcon() {
   );
 }
 
-function ShelfIcon() {
-  return (
-    <svg {...STROKE} aria-hidden>
-      <path d="M3 8h18M3 8V5h18v3M4 8v11h16V8M9 12h6" />
-    </svg>
-  );
-}
 
 function CrateIcon() {
   return (

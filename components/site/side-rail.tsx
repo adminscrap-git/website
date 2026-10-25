@@ -40,7 +40,6 @@ export function SideRail({ whatsapp, phone }: { whatsapp: string; phone: string 
         label="Back to top"
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         className={cn(
-          "bg-cobalt-deep",
           // Collapses rather than just fading, so the stack closes up behind it.
           atTop && "pointer-events-none scale-50 opacity-0",
         )}
@@ -54,12 +53,11 @@ export function SideRail({ whatsapp, phone }: { whatsapp: string; phone: string 
         label="Chat with us on WhatsApp"
         href={`https://wa.me/${whatsapp}`}
         external
-        className="bg-coral"
       >
         <WhatsApp />
       </Fab>
 
-      <Fab label={`Call ${phone}`} href={telHref(phone)} className="bg-coral-deep">
+      <Fab label={`Call ${phone}`} href={telHref(phone)}>
         <Phone />
       </Fab>
     </div>
@@ -77,8 +75,17 @@ type FabProps = {
   onClick?: () => void;
 };
 
+/**
+ * One treatment for all four, brand green with a cream ring.
+ *
+ * The rail is fixed over whatever happens to be scrolled under it, and the
+ * home page has a full-bleed dark green band. Tinting the caps individually
+ * meant two of them disappeared completely against it. The ring is what makes
+ * one fill work on both grounds: invisible on cream, a hard edge on green.
+ */
 const CAP = cn(
-  "grid h-12 w-12 place-items-center rounded-full text-paper shadow-lg shadow-ink/15",
+  "grid h-12 w-12 place-items-center rounded-full bg-cobalt text-paper",
+  "ring-2 ring-paper shadow-lg shadow-ink/20",
   "transition-[transform,opacity,background-color] duration-200 ease-[var(--ease-out-toy)]",
   "hover:scale-110 active:scale-95",
 );
@@ -144,7 +151,7 @@ function ShareFab() {
 
   return (
     <div className="relative">
-      <Fab label="Share this page" onClick={onShare} className="bg-cobalt">
+      <Fab label="Share this page" onClick={onShare}>
         <Share />
       </Fab>
       {toast && (

@@ -15,6 +15,17 @@ import { Field, Input, Textarea } from "@/components/ui/field";
 
 type Errors = Record<string, string>;
 
+/**
+ * True when the slot's label already states its own time window, so the
+ * formatted clock line underneath would be pure repetition. Compares digits
+ * only, which survives "9:00 - 9:45 AM" vs "9:00 AM – 9:45 AM".
+ */
+function labelIsTime(slot: TimeSlot): boolean {
+  const digits = (v: string) => v.replace(/\D/g, "");
+  return digits(slot.label) === digits(formatSlot(slot));
+}
+
+
 export function BookForm({
   catalogue,
   slots,
@@ -272,14 +283,20 @@ export function BookForm({
                   )}
                 >
                   <p className="text-xl font-extrabold">{slot.label}</p>
-                  <p
-                    className={cn(
-                      "readout mt-1 text-xs",
-                      chosen ? "text-paper/70" : "text-ink-3",
-                    )}
-                  >
-                    {formatSlot(slot)}
-                  </p>
+                  {/* The clock line is a caption for a named window like
+                      "Morning". Now that the labels are themselves times, it
+                      would just repeat them, so it only shows when the admin
+                      has given the slot a name that isn't the time. */}
+                  {!labelIsTime(slot) && (
+                    <p
+                      className={cn(
+                        "readout mt-1 text-xs",
+                        chosen ? "text-paper/70" : "text-ink-3",
+                      )}
+                    >
+                      {formatSlot(slot)}
+                    </p>
+                  )}
                   {full ? (
                     <p className="readout mt-2 text-[10px] uppercase tracking-wider text-coral-deep">
                       Full

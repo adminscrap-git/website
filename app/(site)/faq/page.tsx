@@ -28,7 +28,7 @@ export default async function FaqPage() {
   const faqs: { q: string; a: string }[] = [
     {
       q: "How does a pickup actually work?",
-      a: `Pick what you've got from the rate card (or just describe it on the form), choose a date and a two-hour window, and give us your address. We arrive in that window, weigh everything in front of you on a certified digital scale, agree the amount, and pay you cash or UPI before we load the van.`,
+      a: `Pick what you've got from the rate card (or just describe it on the form), choose a date and a 45-minute window, and give us your address. We arrive in that window, weigh everything in front of you on a certified digital scale, agree the amount, and pay you cash or UPI before we load the van.`,
     },
     {
       q: "Do I need to create an account?",
@@ -140,7 +140,7 @@ export default async function FaqPage() {
             href={`https://wa.me/${business.whatsapp}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-full bg-sun px-7 py-3.5 text-lg font-extrabold text-ink border-b-[5px] border-[#c99516] active:translate-y-[5px] active:border-b-0"
+            className="rounded-full bg-sun px-7 py-3.5 text-lg font-extrabold text-ink border-b-[5px] border-[#8a5a12] active:translate-y-[5px] active:border-b-0"
           >
             Message on WhatsApp
           </a>

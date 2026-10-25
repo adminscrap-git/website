@@ -97,12 +97,12 @@ export async function getItemsByIds(
  */
 export const SETTINGS_DEFAULTS: SettingsMap = {
   business: {
-    name: "MINT",
-    tagline: "Scrap in. Cash out.",
+    name: "ScrapSquad",
+    tagline: "Your scrap. Our squad.",
     city: "Hyderabad",
     phone: "+91 95153 21371",
     whatsapp: "919515321371",
-    email: "hello@mint.example",
+    email: "hello@scrapsquad.example",
     address: "",
     maps_url: "",
   },
@@ -113,9 +113,9 @@ export const SETTINGS_DEFAULTS: SettingsMap = {
     show_estimate: true,
   },
   wa_confirm:
-    "Hi MINT — confirming my scrap pickup.\n\nBooking: {{code}}\nWhen: {{date}}, {{slot}}\nItems: {{items}}\nAddress: {{address}}\n{{maps}}\n\nTrack or cancel: {{track}}",
+    "Hi ScrapSquad — confirming my scrap pickup.\n\nBooking: {{code}}\nWhen: {{date}}, {{slot}}\nItems: {{items}}\nAddress: {{address}}\n{{maps}}\n\nTrack or cancel: {{track}}",
   wa_status:
-    "Hi {{name}}, this is MINT about pickup {{code}} on {{date}} ({{slot}}).\n\nStatus: {{status}}\n\nTrack or cancel: {{track}}",
+    "Hi {{name}}, this is ScrapSquad about pickup {{code}} on {{date}} ({{slot}}).\n\nStatus: {{status}}\n\nTrack or cancel: {{track}}",
   impact: {
     trees_per_kg_paper: 0.017,
     litres_water_per_kg_paper: 30,

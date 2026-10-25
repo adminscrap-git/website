@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════
--- MINT — 0003_first_admin
+-- ScrapSquad — 0003_first_admin
 --
 -- Admin access is NOT granted by signing up. It requires a row in
 -- admin_profiles, created by hand. This is deliberate: it means a stray

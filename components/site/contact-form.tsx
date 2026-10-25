@@ -22,7 +22,7 @@ export function ContactForm({ whatsapp }: { whatsapp: string }) {
   const ready = name.trim().length > 1 && message.trim().length > 3;
 
   const body = [
-    `Hi MINT — ${message.trim()}`,
+    `Hi ScrapSquad — ${message.trim()}`,
     "",
     `From: ${name.trim()}`,
     phone.trim() && `Number: ${phone.trim()}`,

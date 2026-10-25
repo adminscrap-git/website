@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
+import squadPhoto from "@/public/squad.webp";
 import { getCatalogue, getSettings } from "@/lib/queries";
 import { ButtonLink } from "@/components/ui/button";
 import { Marquee, TickerItem } from "@/components/ui/marquee";
@@ -36,15 +38,22 @@ export default async function HomePage() {
     <>
       {/* ── hero ─────────────────────────────────────────────────── */}
       <section className="mx-auto grid max-w-[1400px] items-center gap-4 px-5 pb-6 pt-2 sm:px-8 lg:grid-cols-[1.05fr_1fr] lg:gap-8 lg:pt-6">
-        <div className="order-2 lg:order-1">
+        {/* Copy first on a phone, art second. The 3D scene used to sit above
+            the headline, which pushed the primary CTA below the fold on a 667px
+            screen — and behind the tab bar. Decoration does not outrank the
+            button. On lg the grid puts them side by side anyway. */}
+        <div className="order-1">
           <p className="readout text-[11px] uppercase tracking-[0.18em] text-ink-2">
             Doorstep scrap pickup · {business.city}
           </p>
 
-          <h1 className="display mt-5 text-[clamp(3.6rem,13vw,9.5rem)]">
-            Scrap in.
+          {/* Smaller cap than the old headline carried: "Your scrap." is a
+              longer line than "Scrap in.", and at the previous size it broke
+              to three lines and pushed the CTA down behind the tab bar. */}
+          <h1 className="display mt-5 text-[clamp(3rem,9vw,7rem)]">
+            Your scrap.
             <br />
-            <span className="text-cobalt">Cash out.</span>
+            <span className="text-cobalt">Our squad.</span>
           </h1>
 
           <p className="mt-7 max-w-lg text-xl font-semibold leading-snug text-ink-2 sm:text-2xl">
@@ -68,8 +77,8 @@ export default async function HomePage() {
           </p>
         </div>
 
-        <div className="order-1 lg:order-2">
-          <HeroScene className="h-[46vh] min-h-[300px] w-full lg:h-[72vh] lg:min-h-[520px]" />
+        <div className="order-2">
+          <HeroScene className="h-[38vh] min-h-[270px] w-full lg:h-[72vh] lg:min-h-[520px]" />
         </div>
       </section>
 
@@ -105,6 +114,41 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── the squad ────────────────────────────────────────────── */}
+      {/* No card, no border, no shadow. The artwork's own background is cream
+          at #fdf4e2 and the page is #fdf6ec, so left bare it dissolves into
+          the page — the moment it sits in a container it becomes a sticker. */}
+      <section className="mx-auto max-w-[1400px] px-5 pb-8 sm:px-8">
+        <Reveal>
+          <div className="grid items-center gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-10">
+            <div>
+              <p className="readout text-[11px] uppercase tracking-[0.18em] text-cobalt">
+                The squad
+              </p>
+              <h2 className="display mt-4 text-[clamp(2.4rem,6vw,4.5rem)]">
+                The people
+                <br />
+                <span className="text-cobalt">at your door.</span>
+              </h2>
+              <p className="mt-6 max-w-md text-lg font-semibold leading-snug text-ink-2">
+                Uniformed, ID-carrying and trained on the scale. The same
+                people your neighbours already know — we work gated
+                communities across {business.city} every day.
+              </p>
+            </div>
+
+            <Image
+              src={squadPhoto}
+              alt="Three ScrapSquad collectors outside a gated community — one holding a digital hanging scale reading 12.5 kg, one carrying a sack of sorted recyclables, one showing a confirmed pickup on a phone."
+              sizes="(min-width: 1024px) 60vw, 100vw"
+              placeholder="blur"
+              className="feather h-auto w-full"
+              priority={false}
+            />
+          </div>
+        </Reveal>
+      </section>
+
       {/* ── how it works ─────────────────────────────────────────── */}
       <section id="how" className="scroll-mt-24 bg-cobalt text-paper">
         <div className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 sm:py-28">
@@ -124,7 +168,7 @@ export default async function HomePage() {
               {
                 n: "02",
                 title: "Choose a day and a window",
-                body: `Two-hour slots, up to ${booking.max_days_ahead} days ahead. Your booking link lets you move it or cancel it yourself, no phone call needed.`,
+                body: `45-minute windows, 9am to 6pm, up to ${booking.max_days_ahead} days ahead. Your booking link lets you move it or cancel it yourself, no phone call needed.`,
               },
               {
                 n: "03",
@@ -146,7 +190,7 @@ export default async function HomePage() {
 
           <Reveal delay={0.15}>
             <div className="mt-16">
-              <ButtonLink href="/rates" size="lg" className="bg-sun border-[#c99516] hover:bg-[#ffd062]">
+              <ButtonLink href="/rates" size="lg" className="bg-sun border-[#8a5a12] hover:bg-[#f2c05c]">
                 See the rates →
               </ButtonLink>
             </div>
@@ -180,7 +224,7 @@ export default async function HomePage() {
                       <span
                         className="mt-1 h-5 w-5 shrink-0 rounded-full transition-transform duration-200 group-hover:scale-125"
                         style={{
-                          background: ["#047857", "#10b981", "#ffc53d"][i % 3],
+                          background: ["#145a32", "#f5a623", "#e8b53d"][i % 3],
                         }}
                       />
                     </div>

@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════
--- MINT — 0002_seed
+-- ScrapSquad — 0002_seed
 --
 -- Starting catalogue for Hyderabad, Telangana.
 --
@@ -88,12 +88,21 @@ from (values
 join categories c on c.slug = v.cat;
 
 -- ── pickup windows ─────────────────────────────────────────────────
+-- 45-minute windows, 09:00-18:00. Kept in step with 0006_slots_45min.sql so a
+-- fresh database and a migrated one end up with the same schedule.
 insert into time_slots (label, start_time, end_time, capacity, sort_order) values
-  ('Morning',        '09:00', '11:00', 8, 1),
-  ('Late morning',   '11:00', '13:00', 8, 2),
-  ('Afternoon',      '13:00', '15:00', 8, 3),
-  ('Late afternoon', '15:00', '17:00', 8, 4),
-  ('Evening',        '17:00', '19:00', 6, 5);
+  ('9:00 - 9:45 AM',       '09:00', '09:45', 5, 1),
+  ('9:45 - 10:30 AM',      '09:45', '10:30', 5, 2),
+  ('10:30 - 11:15 AM',     '10:30', '11:15', 5, 3),
+  ('11:15 AM - 12:00 PM',  '11:15', '12:00', 5, 4),
+  ('12:00 - 12:45 PM',     '12:00', '12:45', 5, 5),
+  ('12:45 - 1:30 PM',      '12:45', '13:30', 5, 6),
+  ('1:30 - 2:15 PM',       '13:30', '14:15', 5, 7),
+  ('2:15 - 3:00 PM',       '14:15', '15:00', 5, 8),
+  ('3:00 - 3:45 PM',       '15:00', '15:45', 5, 9),
+  ('3:45 - 4:30 PM',       '15:45', '16:30', 5, 10),
+  ('4:30 - 5:15 PM',       '16:30', '17:15', 5, 11),
+  ('5:15 - 6:00 PM',       '17:15', '18:00', 5, 12);
 
 -- ── service area ───────────────────────────────────────────────────
 -- Verified Hyderabad pincodes only. A deliberately short starter list — a
@@ -113,10 +122,10 @@ insert into serviceable_pincodes (pincode, area_name) values
 
 -- ── settings ───────────────────────────────────────────────────────
 insert into settings (key, value) values
-  ('business',  '{"name":"MINT","tagline":"Scrap in. Cash out.","city":"Hyderabad","phone":"+91 95153 21371","whatsapp":"919515321371","email":"hello@mint.example","address":"","maps_url":""}'),
+  ('business',  '{"name":"ScrapSquad","tagline":"your scrap, our squad","city":"Hyderabad","phone":"+91 95153 21371","whatsapp":"919515321371","email":"hello@scrapsquad.example","address":"","maps_url":""}'),
   ('booking',   '{"min_pickup_value":300,"cancel_cutoff_hours":2,"max_days_ahead":14,"show_estimate":true}'),
-  ('wa_confirm','"Hi MINT — confirming my scrap pickup.\n\nBooking: {{code}}\nWhen: {{date}}, {{slot}}\nItems: {{items}}\nAddress: {{address}}\n{{maps}}\n\nTrack or cancel: {{track}}"'),
-  ('wa_status', '"Hi {{name}}, this is MINT about pickup {{code}} on {{date}} ({{slot}}).\n\nStatus: {{status}}\n\nTrack or cancel: {{track}}"'),
+  ('wa_confirm','"Hi ScrapSquad — confirming my scrap pickup.\n\nBooking: {{code}}\nWhen: {{date}}, {{slot}}\nItems: {{items}}\nAddress: {{address}}\n{{maps}}\n\nTrack or cancel: {{track}}"'),
+  ('wa_status', '"Hi {{name}}, this is ScrapSquad about pickup {{code}} on {{date}} ({{slot}}).\n\nStatus: {{status}}\n\nTrack or cancel: {{track}}"'),
   -- Conservative published recycling figures. Shown as estimates, never as
   -- audited numbers. Editable so the client can align them with whatever
   -- their recycler actually certifies.

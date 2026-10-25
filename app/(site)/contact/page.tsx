@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Phone, WhatsApp and email for MINT scrap collection. Fastest reply is WhatsApp.",
+    "Phone, WhatsApp and email for ScrapSquad scrap collection. Fastest reply is WhatsApp.",
   alternates: { canonical: "/contact" },
 };
 

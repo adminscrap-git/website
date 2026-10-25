@@ -13,7 +13,7 @@ export default async function LoginPage(props: PageProps<"/admin/login">) {
     <div className="grid min-h-[80vh] place-items-center px-5 py-16">
       <div className="w-full max-w-sm">
         <p className="display text-3xl">
-          MINT<span className="text-coral">.</span>
+          ScrapSquad<span className="text-coral">.</span>
         </p>
         <h1 className="display mt-6 text-4xl">Admin</h1>
         <p className="mt-2 text-base font-semibold text-ink-2">

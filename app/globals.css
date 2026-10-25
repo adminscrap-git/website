@@ -1,37 +1,42 @@
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────────────────────
-   MINT — design tokens
-   Palette: "Mint Green". White ground, emerald structure and action,
-   sun kept only for notices. Token NAMES are historical — `cobalt` and
-   `coral` are both greens now. Renaming them touches 42 files for zero
-   visual gain, so the values moved and the names stayed. Read them as
-   "structure" and "action".
+   ScrapSquad — design tokens
+   Palette: ScrapSquad. Cream ground, dark green structure, orange action,
+   brown as the shadow tone — straight from the brand kit.
+
+   Token NAMES are historical. `cobalt` is the brand green and `coral` is the
+   brand orange; renaming them touches 40+ files for zero visual change, so
+   read them as "structure" and "action".
+
+   Paper matches the hero illustration's own background (#fdf4e2) closely
+   enough that the artwork dissolves into the page instead of sitting on it.
    ───────────────────────────────────────────────────────────── */
 @theme {
   /* ground */
-  --color-paper: #ffffff;
-  --color-paper-2: #f1f8f4;
-  --color-paper-3: #dbeae1;
+  --color-paper: #fdf6ec;
+  --color-paper-2: #f6ebd8;
+  --color-paper-3: #e7d9bf;
 
   /* ink */
-  --color-ink: #0b0b0b;
-  --color-ink-2: #4a5a52;
-  --color-ink-3: #7c8c83;
+  --color-ink: #14130f;
+  --color-ink-2: #5a5343;
+  --color-ink-3: #8c8472;
 
   /* structure */
-  --color-cobalt: #047857;
-  --color-cobalt-deep: #065f46;
-  --color-cobalt-soft: #d1fae5;
+  --color-cobalt: #145a32;
+  --color-cobalt-deep: #0d3d21;
+  --color-cobalt-soft: #dceae0;
 
   /* action */
-  --color-coral: #10b981;
-  --color-coral-deep: #047857;
-  --color-coral-soft: #d1fae5;
+  --color-coral: #f5a623;
+  --color-coral-deep: #8a5a12;
+  --color-coral-soft: #fce9c6;
 
-  /* energy — the amber "please note" callout, and nothing else */
-  --color-sun: #ffc53d;
-  --color-sun-soft: #fff0cc;
+  /* energy — the "please note" callout, kept a shade off the action orange
+     so a warning never reads as a button */
+  --color-sun: #e8b53d;
+  --color-sun-soft: #fbefd3;
 
   --font-display: var(--font-gabarito), ui-rounded, "Segoe UI", system-ui, sans-serif;
   --font-mono: var(--font-martian), ui-monospace, "Cascadia Mono", monospace;
@@ -242,4 +247,20 @@ body {
   &:hover {
     animation: tile-sweep 0.9s ease-out;
   }
+}
+
+/* Dissolves an image's rectangle into the page.
+   The squad illustration already shares the page's cream background, but a
+   hard crop edge still reads as a pasted-on sticker. Two gradients intersected
+   fade all four sides; `mask-composite` needs the -webkit- pair for Safari,
+   and the un-prefixed `intersect` is the standard spelling of `source-in`. */
+@utility feather {
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 8%, #000 92%, transparent),
+    linear-gradient(to bottom, transparent, #000 7%, #000 88%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 8%, #000 92%, transparent),
+    linear-gradient(to bottom, transparent, #000 7%, #000 88%, transparent);
+  mask-composite: intersect;
 }

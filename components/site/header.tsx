@@ -6,22 +6,13 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
 import { ButtonLink } from "@/components/ui/button";
 import { LocationChip } from "@/components/site/location-chip";
+import { Wordmark } from "@/components/site/logo";
 
 const NAV = [
   { href: "/rates", label: "Rates" },
   { href: "/faq", label: "FAQ" },
   { href: "/contact", label: "Contact" },
 ] as const;
-
-export function Wordmark({ className }: { className?: string }) {
-  return (
-    <span className={cn("inline-flex items-baseline gap-[3px]", className)}>
-      <span className="display text-[1.6em] leading-none tracking-[-0.05em]">MINT</span>
-      {/* The dot is the only place coral appears outside a CTA. */}
-      <span className="mb-[0.12em] h-[0.22em] w-[0.22em] rounded-full bg-coral" />
-    </span>
-  );
-}
 
 export function Header() {
   const pathname = usePathname();
@@ -54,10 +45,12 @@ export function Header() {
       />
 
       <div className="mx-auto flex max-w-[1400px] items-center gap-3 px-5 py-4 sm:px-8">
+        {/* No pill behind it any more: the mark carries its own disc and ring,
+            and boxing a badge inside another badge just muddied both. */}
         <Link
           href="/"
-          className="rounded-full bg-ink px-5 py-2.5 text-paper transition-transform duration-150 hover:-rotate-2"
-          aria-label="MINT — home"
+          className="shrink-0 text-cobalt transition-transform duration-150 hover:-rotate-2"
+          aria-label="ScrapSquad — home"
         >
           <Wordmark className="text-[15px]" />
         </Link>

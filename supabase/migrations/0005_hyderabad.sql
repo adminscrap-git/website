@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════
--- MINT — 0005_hyderabad
+-- ScrapSquad — 0005_hyderabad
 --
 -- Moves the seeded data from Delhi NCR to Hyderabad, Telangana.
 --

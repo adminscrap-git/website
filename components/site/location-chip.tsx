@@ -19,6 +19,8 @@ import { cn } from "@/lib/cn";
  * visit, and otherwise waits for a tap.
  */
 
+// Keeps the pre-rebrand prefix on purpose: the key is invisible to users,
+// and renaming it would silently empty this for everyone who already has one.
 const KEY = "mint.place.v1";
 /** Long enough that a return visit is instant, short enough to follow a move. */
 const MAX_AGE = 12 * 60 * 60 * 1000;

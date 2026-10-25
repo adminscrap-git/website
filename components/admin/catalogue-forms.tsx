@@ -152,7 +152,7 @@ export function CategoryForm({ category }: { category?: Category }) {
             type="checkbox"
             name="is_active"
             defaultChecked={category?.is_active ?? true}
-            className="h-5 w-5 accent-[#047857]"
+            className="h-5 w-5 accent-[#145a32]"
           />
           <span className="text-sm font-bold">Visible on the site</span>
         </label>
@@ -285,7 +285,7 @@ export function ItemForm({
             type="checkbox"
             name="is_active"
             defaultChecked={item?.is_active ?? true}
-            className="h-5 w-5 accent-[#047857]"
+            className="h-5 w-5 accent-[#145a32]"
           />
           <span className="text-sm font-bold">Visible on the site</span>
         </label>
