@@ -13,7 +13,12 @@ import { AdminField, FormMessage, SubmitButton, adminInput } from "./ui";
  */
 const NEXT: Record<BookingStatus, BookingStatus[]> = {
   pending: ["confirmed", "cancelled"],
-  confirmed: ["picked_up", "cancelled"],
+  // "assigned" is not offered here: it is a consequence of picking an agent,
+  // not a button. Assigning one sets it, and unassigning takes it back.
+  confirmed: ["assigned", "picked_up", "cancelled"],
+  assigned: ["en_route", "picked_up", "confirmed", "cancelled"],
+  en_route: ["arrived", "picked_up", "cancelled"],
+  arrived: ["picked_up", "cancelled"],
   picked_up: ["completed", "cancelled"],
   completed: [],
   // Restoring a mistakenly cancelled booking is a real need; going straight

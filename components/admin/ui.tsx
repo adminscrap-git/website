@@ -72,6 +72,11 @@ export function FormMessage({ state }: { state: FormState }) {
 const STATUS_STYLE: Record<BookingStatus, string> = {
   pending: "bg-sun-soft text-[#8a5a12]",
   confirmed: "bg-cobalt-soft text-cobalt-deep",
+  assigned: "bg-cobalt-soft text-cobalt-deep",
+  en_route: "bg-coral-soft text-coral-deep",
+  // The only status the office may need to act on within minutes — someone is
+  // standing at a gate waiting to be let in.
+  arrived: "bg-coral text-ink",
   picked_up: "bg-cobalt text-paper",
   completed: "bg-ink text-paper",
   cancelled: "bg-paper-3 text-ink-2 line-through",

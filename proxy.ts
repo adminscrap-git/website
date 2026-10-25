@@ -50,18 +50,25 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  const isLogin = pathname === "/admin/login";
+
+  // Two areas, two sign-ins. Everything here is about bouncing an anonymous
+  // request to the right one. WHICH of the two a signed-in user actually
+  // belongs to is decided by lib/admin-auth.ts and lib/agent-auth.ts against
+  // their own tables — this only proves somebody is logged in at all.
+  const area = pathname.startsWith("/agent") ? "/agent" : "/admin";
+  const loginPath = `${area}/login`;
+  const isLogin = pathname === loginPath;
 
   if (!user && !isLogin) {
     const url = request.nextUrl.clone();
-    url.pathname = "/admin/login";
-    url.search = pathname === "/admin" ? "" : `?next=${encodeURIComponent(pathname)}`;
+    url.pathname = loginPath;
+    url.search = pathname === area ? "" : `?next=${encodeURIComponent(pathname)}`;
     return NextResponse.redirect(url);
   }
 
   if (user && isLogin) {
     const url = request.nextUrl.clone();
-    url.pathname = "/admin";
+    url.pathname = area;
     url.search = "";
     return NextResponse.redirect(url);
   }
@@ -70,5 +77,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/agent/:path*"],
 };

@@ -7,6 +7,7 @@ import { cn } from "@/lib/cn";
 const LINKS = [
   { href: "/admin", label: "Dashboard", exact: true, manage: false },
   { href: "/admin/bookings", label: "Bookings", exact: false, manage: false },
+  { href: "/admin/agents", label: "Pickup agents", exact: false, manage: true },
   { href: "/admin/catalogue", label: "Catalogue", exact: false, manage: true },
   { href: "/admin/slots", label: "Pickup windows", exact: false, manage: true },
   { href: "/admin/pincodes", label: "Service area", exact: false, manage: true },

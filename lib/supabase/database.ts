@@ -1,5 +1,11 @@
 import type {
   AdminProfile,
+  AgentProfile,
+  BookingPhoto,
+  Notification,
+  PhotoKind,
+  NotificationChannel,
+  NotificationStatus,
   AdminRole,
   Actor,
   Booking,
@@ -57,12 +63,18 @@ export type Database = {
       booking_items: Table<BookingItem>;
       booking_events: Table<BookingEvent>;
       admin_profiles: Table<AdminProfile>;
+      agent_profiles: Table<AgentProfile>;
+      booking_photos: Table<BookingPhoto>;
+      notifications: Table<Notification>;
       settings: Table<SettingsRow>;
     };
     Views: Record<never, never>;
     Functions: Record<never, never>;
     Enums: {
       unit_kind: Unit;
+      photo_kind: PhotoKind;
+      notification_channel: NotificationChannel;
+      notification_status: NotificationStatus;
       booking_status: BookingStatus;
       actor_kind: Actor;
       admin_role: AdminRole;

@@ -10,6 +10,13 @@ import { site } from "@/lib/site";
 import { Panel, StatusPill } from "@/components/admin/ui";
 import { AdminNotes, StatusControls } from "@/components/admin/booking-controls";
 import { CopyButton } from "@/components/ui/copy-button";
+import { AssignAgent } from "@/components/admin/assign-agent";
+import { ProofGallery } from "@/components/admin/proof-gallery";
+import { Outbox } from "@/components/admin/outbox";
+import { listActiveAgents } from "@/app/actions/agents";
+import { sbAdmin } from "@/lib/supabase/admin";
+import { signedProofUrls } from "@/lib/proofs";
+import type { AgentProfile, BookingPhoto, Notification } from "@/lib/db-types";
 
 export default async function BookingDetail(props: PageProps<"/admin/bookings/[id]">) {
   await requireAdmin();
@@ -18,10 +25,36 @@ export default async function BookingDetail(props: PageProps<"/admin/bookings/[i
   const booking = await getBookingById(id);
   if (!booking) notFound();
 
-  const [events, settings] = await Promise.all([
+  const db = sbAdmin();
+  const [events, settings, agents, photoRows, notifRows, assigned] = await Promise.all([
     getBookingEvents(booking.id),
     getSettings(),
+    listActiveAgents(),
+    db
+      .from("booking_photos")
+      .select("*")
+      .eq("booking_id", booking.id)
+      .order("created_at", { ascending: false })
+      .returns<BookingPhoto[]>()
+      .then((r) => r.data ?? []),
+    db
+      .from("notifications")
+      .select("*")
+      .eq("booking_id", booking.id)
+      .order("created_at", { ascending: false })
+      .returns<Notification[]>()
+      .then((r) => r.data ?? []),
+    booking.assigned_agent_id
+      ? db
+          .from("agent_profiles")
+          .select("*")
+          .eq("user_id", booking.assigned_agent_id)
+          .maybeSingle<AgentProfile>()
+          .then((r) => r.data)
+      : Promise.resolve(null),
   ]);
+
+  const photos = await signedProofUrls(photoRows);
 
   const trackUrl = `${site.url}/b/${booking.token}`;
   const message = buildStatusMessage({
@@ -89,6 +122,37 @@ export default async function BookingDetail(props: PageProps<"/admin/bookings/[i
         <div className="space-y-3">
           <Panel title="Status">
             <StatusControls id={booking.id} status={booking.status} />
+          </Panel>
+
+          <Panel
+            title="Pickup agent"
+            description={
+              assigned
+                ? `${assigned.full_name}${assigned.phone ? ` · ${assigned.phone}` : ""}`
+                : "Nobody assigned yet."
+            }
+          >
+            <AssignAgent
+              bookingId={booking.id}
+              agents={agents}
+              current={booking.assigned_agent_id}
+            />
+          </Panel>
+
+          <Panel
+            title="Proof"
+            description={
+              photos.length === 0
+                ? "The agent has not uploaded anything yet."
+                : `${photos.length} photo${photos.length === 1 ? "" : "s"} from the field.`
+            }
+          >
+            <ProofGallery
+              photos={photos.map((p) => ({ id: p.id, kind: p.kind, url: p.url }))}
+              weight={booking.collected_weight}
+              amount={booking.paid_amount}
+              method={booking.payment_method}
+            />
           </Panel>
 
           <Panel
@@ -214,6 +278,17 @@ export default async function BookingDetail(props: PageProps<"/admin/bookings/[i
                 </li>
               ))}
             </ol>
+          </Panel>
+
+          <Panel
+            title="Messages"
+            description={
+              notifRows.length === 0
+                ? "Nothing queued for this booking."
+                : "Every message this booking has generated."
+            }
+          >
+            <Outbox rows={notifRows} />
           </Panel>
         </div>
       </div>

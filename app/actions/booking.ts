@@ -5,12 +5,17 @@ import { getSettings } from "@/lib/queries";
 import { estimate } from "@/lib/estimate";
 import {
   addDays,
+  formatDate,
+  formatSlot,
   isValidPhone,
   isValidPincode,
   normalisePhone,
+  rupees,
   slotStartsAt,
   todayIST,
 } from "@/lib/format";
+import { enqueue, adminRecipient } from "@/lib/notify";
+import { site } from "@/lib/site";
 import type { BookingStatus, Item, TimeSlot } from "@/lib/db-types";
 
 export type ActionResult<T = void> =
@@ -225,6 +230,51 @@ export async function createBooking(
     to_status: "pending" satisfies BookingStatus,
     actor: "customer",
     note: "Booking created",
+  });
+
+  // ── tell people ──────────────────────────────────────────────────
+  // After the booking is safely written, never before. enqueue() swallows its
+  // own failures for the same reason: a customer who has booked must not be
+  // shown an error because a message could not be queued.
+  const itemSummary =
+    priced.map((p) => `${p.item.name} x${p.qty}`).join(", ") ||
+    freeText ||
+    "To be confirmed on pickup";
+  const when = `${formatDate(input.pickupDate)}, ${formatSlot(slot)}`;
+
+  await enqueue({
+    bookingId: created.id,
+    templateKey: "booking_confirmed_customer",
+    audience: "customer",
+    recipient: phone,
+    vars: {
+      name,
+      code: created.code,
+      date: formatDate(input.pickupDate),
+      slot: formatSlot(slot),
+      items: itemSummary,
+      track: `${site.url}/b/${created.token}`,
+      when,
+    },
+  });
+
+  await enqueue({
+    bookingId: created.id,
+    templateKey: "booking_new_admin",
+    audience: "admin",
+    recipient: await adminRecipient(),
+    vars: {
+      code: created.code,
+      name,
+      phone,
+      date: formatDate(input.pickupDate),
+      slot: formatSlot(slot),
+      address: [addressLine, input.landmark?.trim(), pincode].filter(Boolean).join(", "),
+      items: itemSummary,
+      estimate:
+        totals.max > 0 ? `${rupees(totals.min)}-${rupees(totals.max)}` : "-",
+      adminUrl: `${site.url}/admin/bookings/${created.id}`,
+    },
   });
 
   return { ok: true, data: { token: created.token, code: created.code } };
