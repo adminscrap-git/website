@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { useCrate } from "@/lib/crate";
 import { estimate } from "@/lib/estimate";
-import { formatDate, formatSlot, range, rupees } from "@/lib/format";
+import { formatDate, formatSlot, range } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import type { BookingSettings, CategoryWithItems, Item, TimeSlot } from "@/lib/db-types";
 import { createBooking, joinWaitlist, slotAvailability } from "@/app/actions/booking";
@@ -448,8 +448,8 @@ export function BookForm({
               )}
             </p>
             <p className="mt-1 text-base font-semibold text-ink-2">
-              Free pickup · Minimum {rupees(rules.min_pickup_value)} · Cancel any
-              time up to {rules.cancel_cutoff_hours}h before.
+              Free pickup · Cancel any time up to{" "}
+              {rules.cancel_cutoff_hours}h before.
             </p>
           </div>
 

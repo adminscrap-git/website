@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getSettings } from "@/lib/queries";
-import { rupees } from "@/lib/format";
 import { ButtonLink } from "@/components/ui/button";
 
 /**
@@ -49,10 +48,6 @@ export default async function FaqPage() {
     {
       q: "Why are the rates a range and not one number?",
       a: "Metal prices track the commodity market and move week to week, and condition changes what something is worth — clean stripped copper is worth more than mixed coil, an AC with its compressor intact more than one without. The range is the honest version. The exact figure is settled on the scale in front of you.",
-    },
-    {
-      q: "Is there a minimum?",
-      a: `Our minimum pickup is ${rupees(booking.min_pickup_value)}. It covers the fuel and the two people carrying your fridge down the stairs. If you're under it, book anyway — we'll call and work something out, often by combining with a neighbour.`,
     },
     {
       q: "Do you charge for pickup?",

@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useCrate } from "@/lib/crate";
 import { estimate } from "@/lib/estimate";
-import { range, rupees, unitLabel } from "@/lib/format";
+import { range, unitLabel } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import type { CategoryWithItems, Item } from "@/lib/db-types";
 import type { ToyName } from "@/components/three/toy-map";
@@ -20,12 +20,10 @@ export function PickShelf({
   catalogue,
   toyByItem,
   showEstimate,
-  minPickupValue,
 }: {
   catalogue: CategoryWithItems[];
   toyByItem: Record<string, ToyName>;
   showEstimate: boolean;
-  minPickupValue: number;
 }) {
   const { lines, qtyOf, add, setQty, count } = useCrate();
   const reduced = useReducedMotion();
@@ -61,8 +59,6 @@ export function PickShelf({
     () => inCrate.map(({ line }) => toyByItem[line.id] ?? "crate"),
     [inCrate, toyByItem],
   );
-
-  const belowMinimum = showEstimate && totals.max > 0 && totals.max < minPickupValue;
 
   return (
     <>
@@ -271,13 +267,6 @@ export function PickShelf({
                       </li>
                     ))}
                   </ul>
-                )}
-
-                {belowMinimum && (
-                  <p className="mt-4 rounded-[14px] bg-sun-soft px-4 py-3 text-sm font-semibold text-ink">
-                    Our minimum pickup is {rupees(minPickupValue)}. Add a bit more,
-                    or book anyway and we&apos;ll call to sort it out.
-                  </p>
                 )}
 
                 <div className="mt-5 flex items-center gap-3">

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getCatalogue, getSettings } from "@/lib/queries";
-import { rupees } from "@/lib/format";
 import { ButtonLink } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
 import { PickShelf } from "@/components/site/pick-shelf";
@@ -86,10 +85,9 @@ export default async function RatesPage() {
         </div>
       </header>
 
-      <dl className="readout mt-12 grid grid-cols-2 gap-4 rounded-toy bg-paper-2 p-6 sm:grid-cols-4">
+      <dl className="readout mt-12 grid grid-cols-3 gap-4 rounded-toy bg-paper-2 p-6">
         {[
           ["Pickup charge", "₹0"],
-          ["Minimum pickup", rupees(booking.min_pickup_value)],
           ["Payment", "Cash / UPI"],
           ["Weighing", "Digital"],
         ].map(([k, v], i) => (
@@ -110,7 +108,6 @@ export default async function RatesPage() {
             catalogue={catalogue}
             toyByItem={toyByItem}
             showEstimate={booking.show_estimate}
-            minPickupValue={booking.min_pickup_value}
           />
         </div>
       )}

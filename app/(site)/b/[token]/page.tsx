@@ -8,7 +8,6 @@ import {
   formatDateLong,
   formatSlot,
   range,
-  rupees,
   telHref,
   todayIST,
 } from "@/lib/format";
@@ -206,8 +205,7 @@ export default async function BookingPage(props: PageProps<"/b/[token]">) {
               {range(booking.estimate_min, booking.estimate_max)}
             </p>
             <p className="w-full text-sm font-semibold text-ink-2">
-              The real number comes off the scale at your door. Minimum pickup{" "}
-              {rupees(rules.min_pickup_value)}.
+              The real number comes off the scale at your door.
             </p>
           </div>
         )}

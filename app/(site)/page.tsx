@@ -1,13 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import squadPhoto from "@/public/squad.webp";
+import step1 from "@/public/how-it-works-1.webp";
+import step2 from "@/public/how-it-works-2.webp";
+import step3 from "@/public/how-it-works-3.webp";
 import { getCatalogue, getSettings } from "@/lib/queries";
+import { rupees } from "@/lib/format";
 import { ButtonLink } from "@/components/ui/button";
-import { Marquee, TickerItem } from "@/components/ui/marquee";
 import { Reveal } from "@/components/ui/reveal";
-import { HeroScene } from "@/components/three/hero-scene";
-import { range, rupees } from "@/lib/format";
-import { UNIT_LABEL } from "@/lib/db-types";
 import { promises } from "@/lib/site";
 
 /**
@@ -20,82 +20,88 @@ import { promises } from "@/lib/site";
  */
 export const dynamic = "force-dynamic";
 
+/** The hero drawing, cut into its three steps. Order is the order on screen. */
+const HOW_IT_WORKS = [
+  { src: step1, alt: "Step one — book a slot online: a phone showing a date and time picker with 4:30 pm chosen, free and with no signup." },
+  { src: step2, alt: "Step two — we weigh it in front of you: two ScrapSquad collectors in uniform, one holding a digital hanging scale reading 12.5 kg, the other a sack of sorted recyclables." },
+  { src: step3, alt: "Step three — paid on the spot: a ScrapSquad collector showing a phone that reads Pickup Confirmed, 12.5 kg, ₹125." },
+];
+
 
 export default async function HomePage() {
   const [catalogue, settings] = await Promise.all([getCatalogue(), getSettings()]);
   const { business, booking } = settings;
-
-  // Highest-value item per category — the ticker should show the numbers that
-  // make someone stop scrolling, not the ₹8/kg cardboard.
-  const ticker = catalogue
-    .flatMap((c) => c.items)
-    .sort((a, b) => b.price_max - a.price_max)
-    .slice(0, 10);
 
   const totalItems = catalogue.reduce((n, c) => n + c.items.length, 0);
 
   return (
     <>
       {/* ── hero ─────────────────────────────────────────────────── */}
-      <section className="mx-auto grid max-w-[1400px] items-center gap-4 px-5 pb-6 pt-2 sm:px-8 lg:grid-cols-[1.05fr_1fr] lg:gap-8 lg:pt-6">
-        {/* Copy first on a phone, art second. The 3D scene used to sit above
-            the headline, which pushed the primary CTA below the fold on a 667px
-            screen — and behind the tab bar. Decoration does not outrank the
-            button. On lg the grid puts them side by side anyway. */}
-        <div className="order-1">
-          <p className="readout text-[11px] uppercase tracking-[0.18em] text-ink-2">
-            Doorstep scrap pickup · {business.city}
-          </p>
+      <section className="mx-auto max-w-[1400px] px-5 pb-6 pt-2 sm:px-8 lg:pt-6">
+        {/* One column, not two. The art is no longer decoration beside the
+            copy — it is the three steps, and it needs the full width to be
+            read. Copy stays above it so the CTA is never pushed below the
+            fold on a 667px screen. */}
+        {/* Headline left, the promise and the buttons right. Stacked, the
+            headline left half the row empty once the 3D scene it used to sit
+            beside was replaced by the full-width steps below. */}
+        <div className="lg:grid lg:grid-cols-[1.05fr_0.95fr] lg:items-end lg:gap-14">
+          <div>
+            <p className="readout text-[11px] uppercase tracking-[0.18em] text-ink-2">
+              Doorstep scrap pickup · {business.city}
+            </p>
 
-          {/* Smaller cap than the old headline carried: "Your scrap." is a
-              longer line than "Scrap in.", and at the previous size it broke
-              to three lines and pushed the CTA down behind the tab bar. */}
-          <h1 className="display mt-5 text-[clamp(3rem,9vw,7rem)]">
-            Your scrap.
-            <br />
-            <span className="text-cobalt">Our squad.</span>
-          </h1>
-
-          <p className="mt-7 max-w-lg text-xl font-semibold leading-snug text-ink-2 sm:text-2xl">
-            Book a free pickup in under a minute. We weigh everything at your
-            door on a certified digital scale and pay you{" "}
-            <span className="text-ink">cash or UPI before we leave</span>.
-          </p>
-
-          <div className="mt-9 flex flex-wrap gap-3">
-            <ButtonLink href="/rates" size="lg">
-              Pick your scrap →
-            </ButtonLink>
-            <ButtonLink href="/book" size="lg" variant="outline">
-              Or just book a pickup
-            </ButtonLink>
+            {/* Smaller cap than the old headline carried: "Your scrap." is a
+                longer line than "Scrap in.", and at the previous size it broke
+                to three lines and pushed the CTA behind the tab bar. */}
+            <h1 className="display mt-5 text-[clamp(3rem,9vw,7rem)]">
+              Your scrap.
+              <br />
+              <span className="text-cobalt">Our squad.</span>
+            </h1>
           </div>
 
-          <p className="readout mt-6 text-[11px] uppercase tracking-[0.14em] text-ink-3">
-            No signup · Cancel any time before pickup · Minimum pickup{" "}
-            {rupees(booking.min_pickup_value)}
-          </p>
+          <div className="lg:pb-4">
+            <p className="mt-7 max-w-lg text-xl font-semibold leading-snug text-ink-2 sm:text-2xl lg:mt-0">
+              Book a free pickup in under a minute. We weigh everything at your
+              door on a certified digital scale and pay you{" "}
+              <span className="text-ink">cash or UPI before we leave</span>.
+            </p>
+
+            <div className="mt-9 flex flex-wrap gap-3">
+              <ButtonLink href="/rates" size="lg">
+                Pick your scrap →
+              </ButtonLink>
+              <ButtonLink href="/book" size="lg" variant="outline">
+                Or just book a pickup
+              </ButtonLink>
+            </div>
+          </div>
         </div>
 
-        <div className="order-2">
-          <HeroScene className="h-[38vh] min-h-[270px] w-full lg:h-[72vh] lg:min-h-[520px]" />
+        {/* Three panels cut from one drawing, so on a phone each step is a
+            full-width picture you can actually read, and from sm up they sit
+            back together into the single scene they were cut from. The widths
+            are the pixel widths of the cuts — anything else and the pavement
+            and the dotted arrows do not line up across the seams.
+
+            One set of files for both layouts: an <Image> hidden with CSS is
+            still downloaded, so a separate "whole scene" asset would cost
+            every phone an image it never shows. */}
+        <div className="mt-10 grid gap-4 sm:grid-cols-[545fr_585fr_470fr] sm:gap-0">
+          {HOW_IT_WORKS.map((step, i) => (
+            <Image
+              key={step.alt}
+              src={step.src}
+              alt={step.alt}
+              sizes="(min-width: 640px) 34vw, 100vw"
+              placeholder="blur"
+              priority={i === 0}
+              className="h-auto w-full"
+            />
+          ))}
         </div>
       </section>
-
-      {/* ── rate ticker ──────────────────────────────────────────── */}
-      {ticker.length > 0 && (
-        <section aria-label="Today's rates" className="border-y-2 border-ink bg-ink py-4 text-paper">
-          <Marquee seconds={44}>
-            {ticker.map((i) => (
-              <TickerItem
-                key={i.id}
-                label={i.name}
-                value={`${range(i.price_min, i.price_max)} ${UNIT_LABEL[i.unit]}`}
-              />
-            ))}
-          </Marquee>
-        </section>
-      )}
 
       {/* ── promises ─────────────────────────────────────────────── */}
       <section className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 sm:py-28">
