@@ -5,10 +5,11 @@ import step1 from "@/public/how-it-works-1.webp";
 import step2 from "@/public/how-it-works-2.webp";
 import step3 from "@/public/how-it-works-3.webp";
 import { getCatalogue, getSettings } from "@/lib/queries";
-import { rupees } from "@/lib/format";
+import { range, rupees } from "@/lib/format";
 import { ButtonLink } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
 import { promises } from "@/lib/site";
+import { HowItWorks } from "@/components/site/how-it-works";
 
 /**
  * Rendered per request rather than prerendered.
@@ -79,22 +80,18 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Three panels cut from one drawing, so on a phone each step is a
-            full-width picture you can actually read, and from sm up they sit
-            back together into the single scene they were cut from. The widths
-            are the pixel widths of the cuts — anything else and the pavement
-            and the dotted arrows do not line up across the seams.
-
-            One set of files for both layouts: an <Image> hidden with CSS is
-            still downloaded, so a separate "whole scene" asset would cost
-            every phone an image it never shows. */}
-        <div className="mt-10 grid gap-4 sm:grid-cols-[545fr_585fr_470fr] sm:gap-0">
+        {/* Three panels cut from one drawing, sat back together into the
+            single scene at every width — on a phone too, so the scene is never
+            broken into separate pictures. The column widths are the pixel
+            widths of the cuts — anything else and the pavement and the dotted
+            arrows do not line up across the seams. */}
+        <div className="mt-10 grid grid-cols-[545fr_585fr_470fr]">
           {HOW_IT_WORKS.map((step, i) => (
             <Image
               key={step.alt}
               src={step.src}
               alt={step.alt}
-              sizes="(min-width: 640px) 34vw, 100vw"
+              sizes="(min-width: 1400px) 500px, 34vw"
               placeholder="blur"
               priority={i === 0}
               className="h-auto w-full"
@@ -156,53 +153,33 @@ export default async function HomePage() {
       </section>
 
       {/* ── how it works ─────────────────────────────────────────── */}
-      <section id="how" className="scroll-mt-24 bg-cobalt text-paper">
-        <div className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 sm:py-28">
-          <Reveal>
-            <h2 className="display max-w-3xl text-[clamp(2.6rem,7vw,5.5rem)]">
-              Three steps. Nobody haggles.
-            </h2>
-          </Reveal>
-
-          <ol className="mt-16 grid gap-x-8 gap-y-14 md:grid-cols-3">
-            {[
-              {
-                n: "01",
-                title: "Pick what you've got",
-                body: `Browse the rate card and tap whatever's lying around — ${totalItems} things across ${catalogue.length} categories. Not sure what it's called? Skip straight to the form and describe it.`,
-              },
-              {
-                n: "02",
-                title: "Choose a day and a window",
-                body: `45-minute windows, 9am to 6pm, up to ${booking.max_days_ahead} days ahead. Your booking link lets you move it or cancel it yourself, no phone call needed.`,
-              },
-              {
-                n: "03",
-                title: "We weigh, you get paid",
-                body: "Certified digital scale at your door, weighed in front of you. Cash or UPI on the spot — before the van leaves.",
-              },
-            ].map((s, i) => (
-              <Reveal as="li" key={s.n} delay={i * 0.1}>
-                <span className="readout block text-6xl font-bold tracking-tighter text-paper/35 sm:text-7xl">
-                  {s.n}
-                </span>
-                <h3 className="display mt-4 text-3xl sm:text-4xl">{s.title}</h3>
-                <p className="mt-4 text-lg font-semibold leading-snug text-paper/75">
-                  {s.body}
-                </p>
-              </Reveal>
-            ))}
-          </ol>
-
-          <Reveal delay={0.15}>
-            <div className="mt-16">
-              <ButtonLink href="/rates" size="lg" className="bg-sun border-[#8a5a12] hover:bg-[#f2c05c]">
-                See the rates →
-              </ButtonLink>
-            </div>
-          </Reveal>
+      <HowItWorks
+        heading="Three steps. Nobody haggles."
+        steps={[
+          {
+            title: "Pick what you've got",
+            body: `Browse the rate card and tap whatever's lying around — ${totalItems} things across ${catalogue.length} categories. Not sure what it's called? Skip straight to the form and describe it.`,
+          },
+          {
+            title: "Choose a day and a window",
+            body: `45-minute windows, 9am to 6pm, up to ${booking.max_days_ahead} days ahead. Your booking link lets you move it or cancel it yourself, no phone call needed.`,
+          },
+          {
+            title: "We weigh, you get paid",
+            body: "Certified digital scale at your door, weighed in front of you. Cash or UPI on the spot — before the van leaves.",
+          },
+        ]}
+        rates={catalogue
+          .flatMap((c) => c.items)
+          .slice(0, 4)
+          .map((it) => ({ name: it.name, price: `${range(it.price_min, it.price_max)}/${it.unit}` }))}
+      >
+        <div className="mt-16">
+          <ButtonLink href="/rates" size="lg" className="bg-sun border-[#8a5a12] hover:bg-[#f2c05c]">
+            See the rates →
+          </ButtonLink>
         </div>
-      </section>
+      </HowItWorks>
 
       {/* ── what we take ─────────────────────────────────────────── */}
       <section className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 sm:py-28">
@@ -214,7 +191,7 @@ export default async function HomePage() {
           </h2>
         </Reveal>
 
-        <div className="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid grid-cols-2 gap-3 sm:mt-14 lg:grid-cols-3">
           {catalogue.map((cat, i) => {
             const cheapest = Math.min(...cat.items.map((it) => it.price_min));
             const dearest = Math.max(...cat.items.map((it) => it.price_max));
@@ -222,24 +199,29 @@ export default async function HomePage() {
               <Reveal key={cat.id} delay={Math.min(i, 5) * 0.06}>
                 <Link
                   href={`/rates#${cat.slug}`}
-                  className="group flex h-full flex-col justify-between rounded-toy border-2 border-transparent bg-paper-2 p-7 transition-colors hover:border-ink hover:bg-paper"
+                  className="group flex h-full flex-col justify-between rounded-sm border-2 border-transparent bg-paper-2 p-4 transition-colors hover:border-ink hover:bg-paper sm:rounded-toy sm:p-7"
                 >
                   <div>
-                    <div className="flex items-start justify-between gap-4">
-                      <h3 className="display text-3xl sm:text-4xl">{cat.name}</h3>
+                    <div className="flex items-start justify-between gap-2 sm:gap-4">
+                      <h3 className="display text-xl sm:text-4xl">{cat.name}</h3>
                       <span
-                        className="mt-1 h-5 w-5 shrink-0 rounded-full transition-transform duration-200 group-hover:scale-125"
+                        className="mt-1 h-3 w-3 shrink-0 rounded-full sm:h-5 sm:w-5 transition-transform duration-200 group-hover:scale-125"
                         style={{
                           background: ["#145a32", "#f5a623", "#e8b53d"][i % 3],
                         }}
                       />
                     </div>
-                    <p className="mt-3 text-base font-semibold leading-snug text-ink-2">
+                    <p className="mt-2 text-sm font-semibold leading-snug text-ink-2 sm:mt-3 sm:text-base">
                       {cat.description}
                     </p>
                   </div>
-                  <p className="readout mt-7 text-[11px] uppercase tracking-[0.14em] text-ink-3">
-                    {cat.items.length} items · {rupees(cheapest)}–{rupees(dearest)}
+                  <p className="readout mt-4 text-[10px] uppercase tracking-[0.1em] text-ink-3 sm:mt-7 sm:text-[11px] sm:tracking-[0.14em]">
+                    {/* Two lines on a phone so the price range never breaks mid-figure */}
+                    <span className="block sm:inline">{cat.items.length} items</span>
+                    <span className="hidden sm:inline"> · </span>
+                    <span className="block whitespace-nowrap sm:inline">
+                      {rupees(cheapest)}–{rupees(dearest)}
+                    </span>
                   </p>
                 </Link>
               </Reveal>
@@ -316,7 +298,7 @@ export default async function HomePage() {
           </p>
         </Reveal>
 
-        <div className="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid grid-cols-2 gap-3 sm:mt-14 lg:grid-cols-4">
           {[
             { big: "~60kg", small: "of paper recycled spares roughly one tree" },
             { big: "95%", small: "less energy to recycle aluminium than to smelt it new" },
@@ -324,9 +306,9 @@ export default async function HomePage() {
             { big: "0", small: "of our e-waste goes to landfill — all of it to registered recyclers" },
           ].map((s, i) => (
             <Reveal key={s.big} delay={i * 0.07}>
-              <div className="h-full rounded-toy bg-sun-soft p-8">
-                <p className="display text-5xl text-ink sm:text-6xl">{s.big}</p>
-                <p className="mt-4 text-base font-semibold leading-snug text-ink-2">
+              <div className="h-full rounded-sm bg-sun-soft p-4 sm:rounded-toy sm:p-8">
+                <p className="display text-3xl text-ink sm:text-6xl">{s.big}</p>
+                <p className="mt-2 text-sm font-semibold leading-snug text-ink-2 sm:mt-4 sm:text-base">
                   {s.small}
                 </p>
               </div>
