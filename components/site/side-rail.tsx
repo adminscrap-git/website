@@ -1,39 +1,65 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useMotionValueEvent, useReducedMotion, useScroll } from "motion/react";
 import { site } from "@/lib/site";
 import { telHref } from "@/lib/format";
 import { cn } from "@/lib/cn";
 
 /**
- * The floating action rail — WhatsApp, dialer, share, back to top.
+ * The floating action rail: WhatsApp, dialer, share, back to top.
  *
  * Sits above the bottom bar on a phone (`--bottombar-h`), and clear of the
  * footer's bottom edge on desktop. The back-to-top button is the only one that
  * comes and goes: showing it at scroll 0 points at where you already are.
+ *
+ * The rail gets out of the way while you read. Fixed over the page, it was
+ * covering rate-card buttons, booking-form fields and time slots — anything
+ * that happened to be under the bottom-right corner. Scrolling down hides it,
+ * scrolling up or stopping brings it back, which is what every mobile app
+ * does with a floating action button and costs the customer nothing.
  */
 
 const SCROLL_REVEAL = 400;
+/** Ignore the jitter of a finger resting on the screen. */
+const HIDE_AFTER = 12;
 
-/** `whatsapp` and `phone` come from the `settings` table via the layout — the
- * rail is on every page, so reading the build-time fallback here put a stale
- * number site-wide. */
 export function SideRail({ whatsapp, phone }: { whatsapp: string; phone: string }) {
   const [atTop, setAtTop] = useState(true);
+  const [hidden, setHidden] = useState(false);
+  const reduced = useReducedMotion();
 
-  useEffect(() => {
-    const onScroll = () => setAtTop(window.scrollY < SCROLL_REVEAL);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  // Motion's scroll value rather than a scroll listener: it is batched against
+  // the frame loop, so this does not run layout work on every scroll event.
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, "change", (y) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    setAtTop(y < SCROLL_REVEAL);
+
+    // Near the top nothing is being covered yet, and the rubber-band bounce at
+    // the end of a page would otherwise flick it away just as someone reaches
+    // for it.
+    if (y < 120) {
+      setHidden(false);
+      return;
+    }
+    const delta = y - previous;
+    if (Math.abs(delta) < HIDE_AFTER) return;
+    setHidden(delta > 0);
+  });
 
   return (
     <div
+      data-side-rail
       className={cn(
         "fixed right-4 z-40 flex flex-col items-center gap-3 sm:right-6",
         // The bar is on screen at every width now, so the rail always sits above it.
         "bottom-[calc(var(--bottombar-h)+1rem)]",
+        "transition-[transform,opacity] duration-300 ease-[var(--ease-out-toy)]",
+        // Someone who asked for less motion gets the rail where it has always
+        // been, rather than something sliding in and out of the corner.
+        hidden && !reduced && "pointer-events-none translate-x-[130%] opacity-0",
       )}
     >
       <Fab

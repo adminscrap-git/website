@@ -32,17 +32,19 @@ export default async function BookPage() {
   const today = todayIST();
 
   return (
-    <div className="mx-auto max-w-3xl px-5 py-10 sm:px-8 sm:py-16">
+    <div className="mx-auto max-w-3xl px-5 py-6 sm:px-8 sm:py-16">
+      {/* Smaller on a phone than the marketing pages. Someone who opened this
+          page has already decided to book; a full-height title card between
+          them and the first question is an obstacle, not a welcome. The
+          headline sits on one line here instead of two for the same reason. */}
       <header>
         <p className="readout text-[11px] uppercase tracking-[0.18em] text-ink-2">
           The counter
         </p>
-        <h1 className="display mt-4 text-[clamp(2.6rem,8vw,5rem)]">
-          Book your
-          <br />
-          <span className="text-cobalt">pickup.</span>
+        <h1 className="display mt-2 text-[clamp(2rem,8vw,5rem)] sm:mt-4">
+          Book your <span className="text-cobalt">pickup.</span>
         </h1>
-        <p className="mt-6 text-xl font-semibold leading-snug text-ink-2">
+        <p className="mt-3 text-lg font-semibold leading-snug text-ink-2 sm:mt-6 sm:text-xl">
           No account, no password. You&apos;ll get a private link to track,
           reschedule or cancel it yourself.
         </p>

@@ -142,7 +142,13 @@ export function BookForm({
   }
 
   return (
-    <form onSubmit={submit} className="mt-14 space-y-16" noValidate>
+    <form
+      onSubmit={submit}
+      // Bottom padding on a phone clears the sticky confirm bar, or it
+      // covers the last thing you typed.
+      className="mt-10 space-y-12 pb-44 sm:mt-14 sm:space-y-16 sm:pb-0"
+      noValidate
+    >
       {/* ── 01 what ──────────────────────────────────────────────── */}
       <Section n="01" title="What are we collecting?">
         {inCrate.length > 0 ? (
@@ -262,7 +268,12 @@ export function BookForm({
           <p className="readout text-[11px] uppercase tracking-[0.14em] text-ink-2">
             Pickup window <span className="text-coral-deep">*</span>
           </p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Two across on a phone, not twelve stacked blocks. Full width each
+              they ran to roughly 2,000px — nearly half the whole booking page
+              spent on a list of times that are all the same shape. Compact
+              enough that most of the day is on screen at once, which is the
+              only way someone can actually choose. */}
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4">
             {slots.map((slot) => {
               const left = seatsLeft?.[slot.id];
               const full = left === 0;
@@ -275,14 +286,19 @@ export function BookForm({
                   onClick={() => setSlotId(slot.id)}
                   aria-pressed={chosen}
                   className={cn(
-                    "rounded-toy border-2 px-5 py-4 text-left transition-colors",
+                    "rounded-toy border-2 px-3 py-3 text-center transition-colors sm:px-4",
+                    // 44px minimum: this is the one control on the page people
+                    // tap while holding a phone one-handed.
+                    "min-h-11",
                     chosen
                       ? "border-cobalt bg-cobalt text-paper"
                       : "border-transparent bg-paper-2 hover:border-ink",
                     full && "cursor-not-allowed opacity-40 hover:border-transparent",
                   )}
                 >
-                  <p className="text-xl font-extrabold">{slot.label}</p>
+                  <p className="text-[15px] font-extrabold leading-tight sm:text-base">
+                    {slot.label}
+                  </p>
                   {/* The clock line is a caption for a named window like
                       "Morning". Now that the labels are themselves times, it
                       would just repeat them, so it only shows when the admin
@@ -290,7 +306,7 @@ export function BookForm({
                   {!labelIsTime(slot) && (
                     <p
                       className={cn(
-                        "readout mt-1 text-xs",
+                        "readout mt-1 text-center text-xs",
                         chosen ? "text-paper/70" : "text-ink-3",
                       )}
                     >
@@ -298,13 +314,13 @@ export function BookForm({
                     </p>
                   )}
                   {full ? (
-                    <p className="readout mt-2 text-[10px] uppercase tracking-wider text-coral-deep">
+                    <p className="readout mt-1 text-center text-[10px] uppercase tracking-wider text-coral-deep">
                       Full
                     </p>
                   ) : left !== undefined && left <= 2 ? (
                     <p
                       className={cn(
-                        "readout mt-2 text-[10px] uppercase tracking-wider",
+                        "readout mt-1 text-center text-[10px] uppercase tracking-wider",
                         chosen ? "text-sun" : "text-coral-deep",
                       )}
                     >
@@ -429,7 +445,7 @@ export function BookForm({
       </Section>
 
       {/* ── confirm ──────────────────────────────────────────────── */}
-      <div data-field="form" className="border-t-2 border-ink pt-10">
+      <div data-field="form" className="border-t-2 border-ink pt-8 sm:pt-10">
         {formError && (
           <p className="mb-6 rounded-toy bg-coral-soft px-6 py-4 text-lg font-bold text-coral-deep">
             {formError}
@@ -453,17 +469,47 @@ export function BookForm({
             </p>
           </div>
 
-          <motion.div whileTap={reduced ? undefined : { scale: 0.97 }}>
-            <Button
-              type="submit"
-              size="lg"
-              disabled={pending || outOfArea}
-              className="w-full sm:w-auto"
-            >
+          {/* Hidden on a phone because the sticky bar below carries it there.
+              Two submit buttons one above the other is a question about which
+              one is the real one. */}
+          <motion.div
+            whileTap={reduced ? undefined : { scale: 0.97 }}
+            className="hidden sm:block"
+          >
+            <Button type="submit" size="lg" disabled={pending || outOfArea}>
               {pending ? "Booking…" : "Confirm booking →"}
             </Button>
           </motion.div>
         </div>
+      </div>
+
+      {/* The form runs several screens, so on a phone the button used to sit
+          below the horizon the entire time someone was filling it in. Keeping
+          it on screen means the next action is never a scroll away, and the
+          line above it answers "what am I about to book" without scrolling
+          back up to check. */}
+      <div
+        data-bottom-bar="booking"
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-30 sm:hidden",
+          "border-t-2 border-ink bg-paper/95 backdrop-blur-md",
+          "px-4 pt-3",
+          // Clears the tab bar, plus whatever the device reserves below it.
+          "pb-[calc(var(--bottombar-h)+0.5rem)]",
+        )}
+      >
+        <p className="readout mb-2 truncate text-center text-[11px] uppercase tracking-[0.12em] text-ink-3">
+          {pickupDate ? formatDate(pickupDate) : "No date yet"}
+          {slotId && ` · ${slots.find((s) => s.id === slotId)?.label}`}
+        </p>
+        <Button
+          type="submit"
+          size="lg"
+          disabled={pending || outOfArea}
+          className="w-full"
+        >
+          {pending ? "Booking…" : "Confirm booking →"}
+        </Button>
       </div>
     </form>
   );
@@ -479,12 +525,15 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section>
-      <div className="flex items-baseline gap-4 border-b-2 border-ink pb-4">
+    // scroll-mt clears the real header. Jumping to a field after a validation
+    // error used to land the heading underneath it, so the customer was sent
+    // to a section whose name they could not read.
+    <section className="scroll-mt-[calc(var(--header-h)+1rem)]">
+      <div className="flex items-baseline gap-3 border-b-2 border-ink pb-3">
         <span className="readout text-sm font-bold text-cobalt">{n}</span>
-        <h2 className="display text-[clamp(1.8rem,5vw,3rem)]">{title}</h2>
+        <h2 className="display text-[clamp(1.6rem,5vw,3rem)]">{title}</h2>
       </div>
-      <div className="mt-8">{children}</div>
+      <div className="mt-6">{children}</div>
     </section>
   );
 }

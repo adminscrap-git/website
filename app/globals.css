@@ -323,3 +323,15 @@ body {
     text-underline-offset: 4px;
   }
 }
+
+/* ── the rail yields to a page's own bottom bar ──────────────────
+   The booking form puts a sticky Confirm button exactly where the floating
+   rail sits, and the rail was landing on top of the one button the page
+   exists for. `:has()` lets the rail move itself out of the way only on pages
+   that have such a bar, with no prop drilling through the layout and no
+   second scroll listener. Phones only: the bar is `sm:hidden`. */
+@media (max-width: 639px) {
+  body:has([data-bottom-bar="booking"]) [data-side-rail] {
+    bottom: calc(var(--bottombar-h) + 7.5rem);
+  }
+}

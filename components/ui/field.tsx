@@ -7,7 +7,10 @@ import { cn } from "@/lib/cn";
  */
 
 const CONTROL = cn(
-  "w-full rounded-[18px] bg-paper-2 px-5 py-3.5",
+  // py-3 on a phone, py-3.5 from sm. Across nine fields the half-step is
+  // about a sixth of a screen of scrolling on the booking form, and the
+  // control is still well over the 44px minimum tap target.
+  "w-full rounded-[18px] bg-paper-2 px-4 py-3 sm:px-5 sm:py-3.5",
   "text-lg font-semibold text-ink placeholder:text-ink-3 placeholder:font-medium",
   "border-2 border-transparent",
   "transition-colors duration-150",
@@ -35,7 +38,7 @@ export function Field({
   children: React.ReactNode;
 }) {
   return (
-    <div className={cn("flex flex-col gap-2", className)}>
+    <div className={cn("flex flex-col gap-1.5 sm:gap-2", className)}>
       <label
         htmlFor={htmlFor}
         className="readout text-[11px] uppercase tracking-[0.14em] text-ink-2 font-medium"

@@ -55,7 +55,7 @@ export default async function HomePage() {
             {/* Smaller cap than the old headline carried: "Your scrap." is a
                 longer line than "Scrap in.", and at the previous size it broke
                 to three lines and pushed the CTA behind the tab bar. */}
-            <h1 className="display mt-5 text-[clamp(3rem,9vw,7rem)]">
+            <h1 className="display mt-4 text-[clamp(2.75rem,9vw,7rem)]">
               Your scrap.
               <br />
               <span className="text-cobalt">Our squad.</span>
@@ -63,13 +63,12 @@ export default async function HomePage() {
           </div>
 
           <div className="lg:pb-4">
-            <p className="mt-7 max-w-lg text-xl font-semibold leading-snug text-ink-2 sm:text-2xl lg:mt-0">
-              Book a free pickup in under a minute. We weigh everything at your
-              door on a certified digital scale and pay you{" "}
+            <p className="mt-6 max-w-lg text-xl font-semibold leading-snug text-ink-2 sm:text-2xl lg:mt-0">
+              Book in under a minute. We weigh at your door and pay you{" "}
               <span className="text-ink">cash or UPI before we leave</span>.
             </p>
 
-            <div className="mt-9 flex flex-wrap gap-3">
+            <div className="mt-7 flex flex-wrap gap-3">
               <ButtonLink href="/rates" size="lg">
                 Pick your scrap →
               </ButtonLink>
@@ -80,12 +79,20 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Three panels cut from one drawing, sat back together into the
-            single scene at every width — on a phone too, so the scene is never
-            broken into separate pictures. The column widths are the pixel
-            widths of the cuts — anything else and the pavement and the dotted
-            arrows do not line up across the seams. */}
-        <div className="mt-10 grid grid-cols-[545fr_585fr_470fr]">
+      </section>
+
+      {/* Three panels cut from one drawing, sat back together into the single
+          scene at every width. The column widths are the pixel widths of the
+          cuts, so the pavement and the dotted arrows line up across the seams.
+
+          Full bleed and feathered rather than sitting inside the page gutter.
+          The drawing's own background is the same cream as the page, so a hard
+          rectangular edge was the only thing making it read as a sticker
+          pasted on top; fade the edges and it becomes part of the page. It
+          also gets the full width of a phone instead of the width minus two
+          20px gutters, which is most of what there is to give it. */}
+      <div className="relative -mt-2 sm:-mt-4">
+        <div className="feather grid grid-cols-[545fr_585fr_470fr]">
           {HOW_IT_WORKS.map((step, i) => (
             <Image
               key={step.alt}
@@ -98,7 +105,7 @@ export default async function HomePage() {
             />
           ))}
         </div>
-      </section>
+      </div>
 
       {/* ── promises ─────────────────────────────────────────────── */}
       <section className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 sm:py-28">
