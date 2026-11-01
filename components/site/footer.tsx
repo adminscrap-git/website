@@ -3,6 +3,7 @@ import { promises } from "@/lib/site";
 import { telHref } from "@/lib/format";
 import type { BusinessSettings } from "@/lib/db-types";
 import { Wordmark } from "@/components/site/logo";
+import { POLICIES } from "@/components/site/legal";
 
 const COLUMNS = [
   {
@@ -20,6 +21,13 @@ const COLUMNS = [
       { href: "/#how", label: "How it works" },
     ],
   },
+  {
+    title: "Policies",
+    // Built from the same list the policy pages themselves use, so a policy
+    // can never be published without a link to reach it — and a platform
+    // reviewer looking for the privacy page finds it from any page on the site.
+    links: POLICIES,
+  },
 ] as const;
 
 /** Contact details come from the `settings` table via the layout, never from
@@ -30,7 +38,7 @@ export function Footer({ business }: { business: BusinessSettings }) {
   return (
     <footer className="mt-24 bg-ink text-paper">
       <div className="mx-auto max-w-[1400px] px-5 py-16 sm:px-8 sm:py-20">
-        <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1.2fr_1.1fr]">
           <div>
             <Wordmark className="text-[22px]" />
             <p className="mt-4 max-w-xs text-lg font-semibold leading-snug text-paper/70">
@@ -103,6 +111,20 @@ export function Footer({ business }: { business: BusinessSettings }) {
             weighing at pickup.
           </p>
         </div>
+
+        {/* Centred under everything, deliberately quiet. rel="noopener" because
+            it opens a third-party site in a new tab. */}
+        <p className="mt-8 text-center text-[11px] font-semibold text-paper/35">
+          Made by{" "}
+          <a
+            href="https://www.igniks.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-4 transition-colors hover:text-coral"
+          >
+            igniks
+          </a>
+        </p>
       </div>
     </footer>
   );

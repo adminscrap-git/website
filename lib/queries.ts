@@ -102,7 +102,7 @@ export const SETTINGS_DEFAULTS: SettingsMap = {
     city: "Hyderabad",
     phone: "+91 95153 21371",
     whatsapp: "919515321371",
-    email: "hello@scrapsquad.example",
+    email: "admin.scrap@gmail.com",
     address: "",
     maps_url: "",
   },

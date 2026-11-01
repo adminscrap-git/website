@@ -261,3 +261,65 @@ body {
     linear-gradient(to bottom, transparent, #000 7%, #000 88%, transparent);
   mask-composite: intersect;
 }
+
+/* ── long-form policy text ──────────────────────────────────────
+   Four pages of legal prose, styled once. The rest of the site shouts in
+   display type; this has to be read line by line by someone deciding whether
+   to trust us with their address, so it gets ordinary type, generous leading,
+   and headings that are findable rather than loud. */
+@utility legal-prose {
+  & h2 {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-top: 2.75rem;
+  }
+  & h2:first-child {
+    margin-top: 0;
+  }
+  & h3 {
+    font-size: 1.0625rem;
+    font-weight: 800;
+    margin-top: 1.75rem;
+  }
+  & p {
+    margin-top: 1rem;
+    font-size: 1.0625rem;
+    font-weight: 500;
+    line-height: 1.65;
+    color: var(--color-ink-2);
+  }
+  & ul,
+  & ol {
+    margin-top: 1rem;
+    padding-left: 1.35rem;
+    display: grid;
+    gap: 0.6rem;
+  }
+  & ul {
+    list-style: disc;
+  }
+  & ol {
+    list-style: decimal;
+  }
+  & li {
+    font-size: 1.0625rem;
+    font-weight: 500;
+    line-height: 1.6;
+    color: var(--color-ink-2);
+  }
+  & li::marker {
+    color: var(--color-cobalt);
+  }
+  & strong {
+    font-weight: 800;
+    color: var(--color-ink);
+  }
+  & a {
+    font-weight: 700;
+    color: var(--color-cobalt);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}

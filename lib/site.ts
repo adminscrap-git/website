@@ -17,7 +17,7 @@ export const site = {
   // Digits only, with country code — this is what wa.me needs.
   whatsapp: normalisePhone(process.env.NEXT_PUBLIC_WHATSAPP || "919515321371"),
   phone: process.env.NEXT_PUBLIC_PHONE ?? "+91 95153 21371",
-  email: process.env.NEXT_PUBLIC_EMAIL ?? "hello@scrapsquad.example",
+  email: process.env.NEXT_PUBLIC_EMAIL ?? "admin.scrap@gmail.com",
   city: process.env.NEXT_PUBLIC_CITY ?? "Hyderabad",
 
   url: resolveSiteUrl(),
