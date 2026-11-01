@@ -22,7 +22,9 @@
 
   --card-bg: #ffffff;
   --card-ink: var(--color-cobalt-deep);
-  --card-muted: #66806e;
+  /* 5.06:1 on the white card. The old #66806e was 4.31, under the 4.5
+     minimum, and it carries the rate figures and the UPI reference. */
+  --card-muted: #5d7465;
   --card-border: #e3ece5;
   --card-accent: #1f8a4c;
   --card-accent-soft: #e5f5ea;
@@ -68,7 +70,11 @@
   list-style: none;
 }
 .jump a {
-  display: inline-block;
+  /* 44px floor: these are the jump links for the whole section, tapped on a
+     phone. padding alone left them at 39. */
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   padding: 8px 14px;
   border: 1px solid color-mix(in srgb, var(--color-paper) 25%, transparent);
   border-radius: 999px;
@@ -270,7 +276,10 @@
   background: var(--card-accent-soft);
   font-size: 12px;
   font-weight: 700;
-  color: var(--card-accent);
+  /* Not --card-accent: that token is a fill in five other places, where its
+     lightness is right. As text on the soft green chip it was 3.87:1. The
+     brand green is 7.32:1 on the same background. */
+  color: var(--color-cobalt);
 }
 
 /* ── steps + progress line ────────────────────────────────── */

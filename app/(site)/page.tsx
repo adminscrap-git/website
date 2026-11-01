@@ -194,7 +194,9 @@ export default async function HomePage() {
           <h2 className="display max-w-3xl text-[clamp(2.6rem,7vw,5.5rem)]">
             If it&apos;s taking up space,
             <br />
-            <span className="text-coral">we&apos;ll take it away.</span>
+            {/* coral-deep, not coral: #f5a623 on cream is 1.89:1, and large text
+                needs 3:1. Same colour family, readable in daylight. */}
+            <span className="text-coral-deep">we&apos;ll take it away.</span>
           </h2>
         </Reveal>
 

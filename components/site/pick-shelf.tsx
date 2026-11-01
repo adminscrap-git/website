@@ -13,6 +13,55 @@ import { CrateScene } from "@/components/three/crate-scene";
 import { ButtonLink } from "@/components/ui/button";
 import { ItemIcon } from "@/components/site/item-icon";
 
+/**
+ * What people type, mapped to what the rate card calls it.
+ *
+ * Searching "fridge" found nothing, because the item is "Refrigerator". So
+ * did "tv" and "kabad". Someone who searches the word they actually use and
+ * gets an empty page concludes we do not take it and leaves, which is the
+ * most expensive thing this screen can do. Keyed by what is typed; the values
+ * are matched against the catalogue the same way a typed word is.
+ */
+const SYNONYMS: Record<string, string> = {
+  fridge: "refrigerator",
+  tv: "television",
+  telly: "television",
+  ac: "air conditioner",
+  raddi: "newspaper",
+  loha: "iron",
+  peti: "carton",
+  almari: "almirah",
+  cupboard: "almirah",
+  washing: "washing machine",
+  computer: "desktop",
+  pc: "desktop",
+  cell: "mobile",
+  cooler: "air cooler",
+  battery: "battery",
+  cans: "tin",
+  bottles: "pet bottles",
+};
+
+/**
+ * Words for the whole trade rather than for any one item.
+ *
+ * No line on the rate card is called "scrap", so searching it returned an
+ * empty page on a page that is entirely scrap. These show everything, which
+ * is what the person meant.
+ */
+const SHOW_EVERYTHING = new Set([
+  "scrap",
+  "kabad",
+  "kabaad",
+  "kabadi",
+  "kabadiwala",
+  "raddiwala",
+  "junk",
+  "waste",
+  "all",
+  "everything",
+]);
+
 /** kg items step in fives — nobody sells one kilo of newspaper. */
 const step = (item: Item) => (item.unit === "kg" ? 5 : 1);
 
@@ -28,6 +77,34 @@ export function PickShelf({
   const { lines, qtyOf, add, setQty, count } = useCrate();
   const reduced = useReducedMotion();
   const [expanded, setExpanded] = useState(false);
+  const [query, setQuery] = useState("");
+
+  // Forty-three items across seven sections is twelve phone screens. Someone
+  // who arrived wanting to sell a fridge should not have to recognise that a
+  // fridge lives under "Appliances" and then scroll to find it. Matches the
+  // item name, its note, and its category, so "paper" finds the section and
+  // "raddi" finds the one item whose note mentions it.
+  const q = query.trim().toLowerCase();
+  const results = useMemo(() => {
+    if (!q || SHOW_EVERYTHING.has(q)) return catalogue;
+    // Both the typed word and anything it is a known nickname for. "fridge"
+    // searches for "fridge" and "refrigerator"; a hit on either counts.
+    const terms = [q, SYNONYMS[q]].filter(Boolean) as string[];
+    return catalogue
+      .map((c) => ({
+        ...c,
+        items: c.items.filter((i) => {
+          const hay = [i.name, i.note ?? "", c.name].join(" ").toLowerCase();
+          return terms.some((t) => hay.includes(t));
+        }),
+      }))
+      .filter((c) => c.items.length > 0);
+  }, [catalogue, q]);
+
+  const matchCount = useMemo(
+    () => results.reduce((n, c) => n + c.items.length, 0),
+    [results],
+  );
 
   const itemsById = useMemo(() => {
     const m = new Map<string, Item>();
@@ -62,21 +139,66 @@ export function PickShelf({
 
   return (
     <>
-      {/* jump nav */}
-      <nav className="sticky top-[var(--header-h)] z-30 -mx-5 mb-10 overflow-x-auto bg-paper px-5 py-3 sm:-mx-8 sm:px-8">
-        <ul className="flex w-max gap-2">
-          {catalogue.map((c) => (
-            <li key={c.id}>
-              <a
-                href={`#${c.slug}`}
-                className="block rounded-full bg-paper-2 px-4 py-2 text-sm font-bold text-ink-2 transition-colors hover:bg-ink hover:text-paper"
-              >
-                {c.name}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      {/* Search and the category jumps, stuck together under the header so
+          both stay reachable however far down the page you are. */}
+      <div className="sticky top-[var(--header-h)] z-30 -mx-5 mb-8 bg-paper px-5 pb-3 pt-3 sm:-mx-8 sm:px-8">
+        <div className="relative">
+          <SearchIcon className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-ink-3" />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search any material"
+            aria-label="Search the rate card"
+            className="w-full rounded-full border-2 border-paper-3 bg-paper-2 py-3 pl-12 pr-4 text-base font-semibold text-ink placeholder:font-medium placeholder:text-ink-3 focus:border-cobalt focus:bg-paper focus:outline-none"
+          />
+        </div>
+
+        {/* While a search is running the anchors point at sections that are no
+            longer on the page, so the row becomes the result count instead. */}
+        {q ? (
+          <p className="readout mt-3 text-[11px] uppercase tracking-[0.14em] text-ink-2">
+            {matchCount === 0
+              ? "Nothing matches"
+              : `${matchCount} ${matchCount === 1 ? "match" : "matches"}`}
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              className="ml-3 font-bold text-cobalt underline underline-offset-4"
+            >
+              Clear
+            </button>
+          </p>
+        ) : (
+          <nav className="-mx-5 overflow-x-auto px-5 pt-3 sm:-mx-8 sm:px-8">
+            <ul className="flex w-max gap-2">
+              {catalogue.map((c) => (
+                <li key={c.id}>
+                  <a
+                    href={`#${c.slug}`}
+                    className="flex min-h-11 items-center rounded-full bg-paper-2 px-4 text-sm font-bold text-ink-2 transition-colors hover:bg-ink hover:text-paper"
+                  >
+                    {c.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
+      </div>
+
+      {q && matchCount === 0 && (
+        <div className="rounded-toy bg-paper-2 px-6 py-12 text-center">
+          <p className="display text-2xl">No match for &ldquo;{query.trim()}&rdquo;</p>
+          <p className="mx-auto mt-3 max-w-sm text-base font-semibold text-ink-2">
+            We still probably take it. Book a pickup and describe it in your own
+            words, and we will price it at your door.
+          </p>
+          <ButtonLink href="/book" className="mt-6">
+            Book a pickup
+          </ButtonLink>
+        </div>
+      )}
 
       {/* Only reserve room for the dock when the dock is actually there —
           otherwise an empty crate leaves a screen of dead space. */}
@@ -84,7 +206,7 @@ export function PickShelf({
         {/* scroll-mt clears the real header plus the jump-nav sitting under
             it, so a tapped category lands with its heading visible rather
             than tucked behind the chips. */}
-        {catalogue.map((cat) => (
+        {results.map((cat) => (
           <section
             key={cat.id}
             id={cat.slug}
@@ -93,7 +215,7 @@ export function PickShelf({
             <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b-2 border-ink pb-4">
               <h2 className="display text-[clamp(2.2rem,6vw,4rem)]">{cat.name}</h2>
               <p className="readout text-[11px] uppercase tracking-[0.14em] text-ink-3">
-                {cat.items.length} items
+                {cat.items.length} {cat.items.length === 1 ? "item" : "items"}
               </p>
             </div>
             {cat.description && (
@@ -347,5 +469,25 @@ function StepButton({
     >
       {children}
     </button>
+  );
+}
+
+/* Inline rather than from an icon package: this codebase draws its own marks
+   (the tab bar, the rail, the location pin, the 43 item icons), and one
+   magnifier is not worth a dependency. */
+function SearchIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      className={className}
+      aria-hidden
+    >
+      <circle cx="11" cy="11" r="7" />
+      <path d="m16.5 16.5 4 4" />
+    </svg>
   );
 }

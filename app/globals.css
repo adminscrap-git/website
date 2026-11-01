@@ -21,7 +21,12 @@
   /* ink */
   --color-ink: #14130f;
   --color-ink-2: #5a5343;
-  --color-ink-3: #8c8472;
+  --color-ink-3: #716957; /* 5.07:1 on paper, 4.61:1 on paper-2. The old
+     #8c8472 was 3.46 and 3.14, so every muted label on the site — the
+     mono eyebrows, stat captions, form hints, the location chip — sat
+     under the 4.5:1 minimum. Darkened the least amount that clears it
+     against both cream tones. Used as text only, bar two dashed borders
+     in the admin that a darker grey only helps. */
 
   /* structure */
   --color-cobalt: #145a32;
@@ -333,5 +338,25 @@ body {
 @media (max-width: 639px) {
   body:has([data-bottom-bar="booking"]) [data-side-rail] {
     bottom: calc(var(--bottombar-h) + 7.5rem);
+  }
+}
+
+/* ── minimum readable size on a phone ───────────────────────────
+   The mono label style runs 9px to 11px across the site. That reads fine on
+   a desktop monitor at arm's length and is genuinely hard on a phone held in
+   one hand outdoors, which is where almost all of this site is read. The
+   floor goes to 12px below the sm breakpoint and desktop keeps the tighter
+   original sizes, so the look is unchanged where it was already working.
+
+   Done here rather than at 43 call sites so a new label cannot reintroduce
+   the problem. Deliberately outside @layer: unlayered rules beat layered
+   utilities regardless of source order, which is what lets a single class
+   selector win against Tailwind's own. */
+@media (max-width: 639px) {
+  .text-\[9px\],
+  .text-\[10px\],
+  .text-\[10\.5px\],
+  .text-\[11px\] {
+    font-size: 12px;
   }
 }

@@ -85,15 +85,20 @@ export default async function RatesPage() {
         </div>
       </header>
 
-      <dl className="readout mt-12 grid grid-cols-3 gap-4 rounded-toy bg-paper-2 p-6">
+      {/* Three columns at 390px gave each stat about 100px, which wrapped
+          "Cash / UPI" onto two lines and clipped "Digital". Rows on a phone,
+          columns from sm. */}
+      <dl className="readout mt-10 grid gap-x-4 gap-y-3 rounded-toy bg-paper-2 p-5 sm:mt-12 sm:grid-cols-3 sm:p-6">
         {[
           ["Pickup charge", "₹0"],
           ["Payment", "Cash / UPI"],
           ["Weighing", "Digital"],
         ].map(([k, v], i) => (
           <Reveal key={k} delay={i * 0.06}>
-            <dt className="text-[10px] uppercase tracking-[0.14em] text-ink-3">{k}</dt>
-            <dd className="mt-1 text-lg font-bold text-ink">{v}</dd>
+            <div className="flex items-baseline justify-between gap-4 sm:block">
+              <dt className="text-[10px] uppercase tracking-[0.14em] text-ink-3">{k}</dt>
+              <dd className="text-lg font-bold text-ink sm:mt-1">{v}</dd>
+            </div>
           </Reveal>
         ))}
       </dl>

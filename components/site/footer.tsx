@@ -62,12 +62,12 @@ export function Footer({ business }: { business: BusinessSettings }) {
               <h2 className="readout text-[11px] uppercase tracking-[0.16em] text-paper/40">
                 {col.title}
               </h2>
-              <ul className="mt-4 space-y-2.5">
+              <ul className="mt-2 space-y-0.5">
                 {col.links.map((l) => (
                   <li key={l.href}>
                     <Link
                       href={l.href}
-                      className="text-lg font-bold text-paper/85 transition-colors hover:text-coral"
+                      className="flex min-h-11 items-center text-lg font-bold text-paper/85 transition-colors hover:text-coral"
                     >
                       {l.label}
                     </Link>
@@ -81,21 +81,21 @@ export function Footer({ business }: { business: BusinessSettings }) {
             <h2 className="readout text-[11px] uppercase tracking-[0.16em] text-paper/40">
               Reach us
             </h2>
-            <ul className="mt-4 space-y-2.5 text-lg font-bold">
+            <ul className="mt-2 space-y-0.5 text-lg font-bold">
               <li>
-                <a href={waHref} className="text-paper/85 transition-colors hover:text-coral">
+                <a href={waHref} className="flex min-h-11 items-center text-paper/85 transition-colors hover:text-coral">
                   WhatsApp
                 </a>
               </li>
               <li>
-                <a href={telHref(business.phone)} className="text-paper/85 transition-colors hover:text-coral">
+                <a href={telHref(business.phone)} className="flex min-h-11 items-center text-paper/85 transition-colors hover:text-coral">
                   {business.phone}
                 </a>
               </li>
               <li>
                 <a
                   href={`mailto:${business.email}`}
-                  className="break-all text-paper/85 transition-colors hover:text-coral"
+                  className="flex min-h-11 items-center break-all text-paper/85 transition-colors hover:text-coral"
                 >
                   {business.email}
                 </a>
@@ -120,7 +120,7 @@ export function Footer({ business }: { business: BusinessSettings }) {
             href="https://www.igniks.com/"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline underline-offset-4 transition-colors hover:text-coral"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center px-3 underline underline-offset-4 transition-colors hover:text-coral"
           >
             igniks
           </a>

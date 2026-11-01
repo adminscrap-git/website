@@ -54,7 +54,9 @@ export function Header() {
               ring, and boxing a badge inside another badge muddied both. */}
           <Link
             href="/"
-            className="shrink-0 text-cobalt transition-transform duration-150 hover:-rotate-2"
+            // -my-1 py-1 grows the target without moving the mark: home is
+            // the one link people hit by reflex when they get lost.
+            className="-my-1.5 flex min-h-11 shrink-0 items-center py-1.5 text-cobalt transition-transform duration-150 hover:-rotate-2"
             aria-label="ScrapSquad — home"
           >
             <Wordmark className="text-[15px]" />

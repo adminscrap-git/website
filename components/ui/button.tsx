@@ -24,7 +24,9 @@ const VARIANT: Record<Variant, string> = {
 };
 
 const SIZE: Record<Size, string> = {
-  sm: "text-sm px-4 py-2 gap-1.5",
+  // min-h-11 rather than more padding: 44px is the floor for a thing people
+  // tap, and py-2 alone left this at 41.
+  sm: "min-h-11 text-sm px-4 py-2 gap-1.5",
   md: "text-base px-6 py-3 gap-2",
   lg: "text-lg sm:text-xl px-8 py-4 gap-2.5",
 };

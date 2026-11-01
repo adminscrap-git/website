@@ -66,7 +66,7 @@ export function LegalPage({
           <Row label="Email">
             <a
               href={`mailto:${business.email}`}
-              className="break-all font-bold text-cobalt underline underline-offset-4"
+              className="inline-flex min-h-11 items-center break-all font-bold text-cobalt underline underline-offset-4"
             >
               {business.email}
             </a>
@@ -74,7 +74,7 @@ export function LegalPage({
           <Row label="Phone / WhatsApp">
             <a
               href={telHref(business.phone)}
-              className="font-bold text-cobalt underline underline-offset-4"
+              className="inline-flex min-h-11 items-center font-bold text-cobalt underline underline-offset-4"
             >
               {business.phone}
             </a>
@@ -100,7 +100,7 @@ export function LegalPage({
             <li key={p.href}>
               <Link
                 href={p.href}
-                className="text-base font-bold text-ink-2 underline underline-offset-4 transition-colors hover:text-cobalt"
+                className="flex min-h-11 items-center text-base font-bold text-ink-2 underline underline-offset-4 transition-colors hover:text-cobalt"
               >
                 {p.label}
               </Link>
